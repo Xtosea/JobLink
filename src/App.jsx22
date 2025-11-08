@@ -1,0 +1,12 @@
+import React from "react";
+
+function App() {
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Welcome to Job Link</h1>
+      <p>Your connection to job opportunities and applications.</p>
+    </div>
+  );
+}
+
+export default App;
