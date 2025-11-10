@@ -14,8 +14,6 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // ✅ Set backend URL (uploads live here)
-  const apiBase = process.env.REACT_APP_API_BASE || "https://joblink-backend.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
@@ -27,6 +25,7 @@ export default function AdminDashboard() {
     const fetchApps = async () => {
       try {
         const res = await listApplications(token);
+        // Expect res.data to include proofFile and resumeFile as full URLs
         setApplications(res.data);
       } catch (err) {
         console.error(err);
@@ -134,6 +133,14 @@ export default function AdminDashboard() {
         y += 6;
         doc.text(`Reply: ${app.reply || "-"}`, 10, y);
         y += 6;
+        if (app.proofFile) {
+          doc.text(`Proof: ${app.proofFile}`, 10, y);
+          y += 6;
+        }
+        if (app.resumeFile) {
+          doc.text(`CV: ${app.resumeFile}`, 10, y);
+          y += 6;
+        }
       });
       doc.save(filename);
     };
@@ -218,7 +225,7 @@ export default function AdminDashboard() {
                   <div className="mt-2 space-y-1">
                     {app.proofFile ? (
                       <a
-                        href={`${apiBase}/uploads/${app.proofFile}`}
+                        href={app.proofFile}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block text-sm text-blue-600 underline"
@@ -231,7 +238,7 @@ export default function AdminDashboard() {
 
                     {app.resumeFile ? (
                       <a
-                        href={`${apiBase}/uploads/${app.resumeFile}`}
+                        href={app.resumeFile}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block text-sm text-green-600 underline"
