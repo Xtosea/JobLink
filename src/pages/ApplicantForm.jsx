@@ -40,7 +40,7 @@ export default function ApplicantForm() {
           <option value="Part-time">Part-time</option>
         </select>
         <input name="jobPosition" value={form.jobPosition} onChange={handleChange} required placeholder="Type of job position" className="w-full p-2 border rounded" />
-        <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded">Continue to Upload</button>
+        <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded">Submit</button>
       </form>
     </div>
   );
