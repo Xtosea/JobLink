@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  const apiBase = process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
@@ -25,7 +26,6 @@ export default function AdminDashboard() {
     const fetchApps = async () => {
       try {
         const res = await listApplications(token);
-        // Expect res.data to include proofFile and resumeFile as full URLs
         setApplications(res.data);
       } catch (err) {
         console.error(err);
@@ -35,16 +35,12 @@ export default function AdminDashboard() {
     fetchApps();
   }, [token, navigate]);
 
-  // ✅ Reply text change
   const handleReplyChange = (id, value) => {
     setReplyText((prev) => ({ ...prev, [id]: value }));
   };
 
-  // ✅ Send reply
   const handleReply = async (id) => {
     const reply = replyText[id] || "";
-    if (!reply) return alert("Please write a reply before sending.");
-
     try {
       const payload = { reply, status: "Replied" };
       const res = await replyToApplication(id, payload, token);
@@ -59,7 +55,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✅ Update status
   const handleStatusChange = async (id, newStatus) => {
     try {
       const payload = { status: newStatus };
@@ -73,27 +68,26 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✅ Filter + search
+  // ✅ Filter + Pagination
   const filtered = applications.filter((app) => {
     const search = searchTerm.toLowerCase();
     const matchesSearch =
       app.fullname.toLowerCase().includes(search) ||
       app.email.toLowerCase().includes(search) ||
       app.jobType.toLowerCase().includes(search) ||
-      (app.jobPosition || "").toLowerCase().includes(search);
+      app.jobPosition.toLowerCase().includes(search);
     const status = app.status || "Pending";
     const matchesStatus = filterStatus === "All" || status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  // ✅ Pagination
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
-  // ✅ PDF Generation
+  // ✅ Generate PDF
   const generatePDF = (apps, filename) => {
     const doc = new jsPDF();
     const img = new Image();
@@ -133,14 +127,6 @@ export default function AdminDashboard() {
         y += 6;
         doc.text(`Reply: ${app.reply || "-"}`, 10, y);
         y += 6;
-        if (app.proofFile) {
-          doc.text(`Proof: ${app.proofFile}`, 10, y);
-          y += 6;
-        }
-        if (app.resumeFile) {
-          doc.text(`CV: ${app.resumeFile}`, 10, y);
-          y += 6;
-        }
       });
       doc.save(filename);
     };
@@ -153,7 +139,7 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">{appName}</h1>
 
-      {/* Filters + Search */}
+      {/* ✅ Filters */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 mb-4">
         <input
           type="text"
@@ -175,7 +161,7 @@ export default function AdminDashboard() {
         </select>
       </div>
 
-      {/* Top Buttons */}
+      {/* ✅ Top Buttons */}
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => {
@@ -200,7 +186,7 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* Applications Table */}
+      {/* ✅ Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 border-b">
@@ -216,44 +202,52 @@ export default function AdminDashboard() {
           <tbody>
             {paginated.map((app) => (
               <tr key={app._id} className="border-b hover:bg-gray-50">
+                {/* ✅ Applicant Info */}
                 <td className="px-4 py-3">
-                  <p className="font-semibold">{app.fullname}</p>
-                  <p className="text-sm text-gray-500">{app.email}</p>
-                  <p className="text-sm text-gray-400">{app.mobile}</p>
+                  <div>
+                    <p className="font-semibold">{app.fullname}</p>
+                    <p className="text-sm text-gray-500">{app.email}</p>
+                    <p className="text-sm text-gray-400">{app.mobile}</p>
 
-                  {/* Uploaded Files */}
-                  <div className="mt-2 space-y-1">
-                    {app.proofFile ? (
-                      <a
-                        href={app.proofFile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-sm text-blue-600 underline"
-                      >
-                        View Proof of Payment
-                      </a>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic">No proof uploaded</p>
-                    )}
+                    {/* ✅ Show uploaded files */}
+                    <div className="mt-2 space-y-1">
+                      {app.proofFile ? (
+                        <a
+                          href={`${apiBase}/uploads/${app.proofFile}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-sm text-blue-600 underline"
+                        >
+                          View Proof of Payment
+                        </a>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">
+                          No proof uploaded
+                        </p>
+                      )}
 
-                    {app.resumeFile ? (
-                      <a
-                        href={app.resumeFile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-sm text-green-600 underline"
-                      >
-                        View CV / Resume
-                      </a>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic">No CV uploaded</p>
-                    )}
+                      {app.resumeFile ? (
+                        <a
+                          href={`${apiBase}/uploads/${app.resumeFile}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-sm text-green-600 underline"
+                        >
+                          View CV / Resume
+                        </a>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">
+                          No CV uploaded
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </td>
 
+                {/* ✅ Job Info */}
                 <td className="px-4 py-3">{app.jobType}</td>
 
-                {/* Reply */}
+                {/* ✅ Reply Section */}
                 <td className="px-4 py-3">
                   <textarea
                     placeholder="Write reply..."
@@ -263,11 +257,13 @@ export default function AdminDashboard() {
                   />
                 </td>
 
-                {/* Status */}
+                {/* ✅ Status */}
                 <td className="px-4 py-3">
                   <select
                     value={app.status || "Pending"}
-                    onChange={(e) => handleStatusChange(app._id, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusChange(app._id, e.target.value)
+                    }
                     className={`border rounded px-2 py-1 text-sm ${
                       app.status === "Approved"
                         ? "bg-blue-100 text-blue-700"
@@ -285,7 +281,7 @@ export default function AdminDashboard() {
                   </select>
                 </td>
 
-                {/* Actions */}
+                {/* ✅ Actions */}
                 <td className="px-4 py-3 text-center">
                   <button
                     onClick={() => handleReply(app._id)}
@@ -299,7 +295,10 @@ export default function AdminDashboard() {
 
             {paginated.length === 0 && (
               <tr>
-                <td colSpan="7" className="text-center py-6 text-gray-500 italic">
+                <td
+                  colSpan="7"
+                  className="text-center py-6 text-gray-500 italic"
+                >
                   No applications found.
                 </td>
               </tr>
@@ -308,7 +307,7 @@ export default function AdminDashboard() {
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* ✅ Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
           <button
