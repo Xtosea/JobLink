@@ -14,7 +14,8 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  // ✅ Set backend URL (uploads live here)
+  const apiBase = process.env.REACT_APP_API_BASE || "https://joblink-backend.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
     fetchApps();
   }, [token, navigate]);
 
-  // ✅ Handle reply changes
+  // ✅ Reply text change
   const handleReplyChange = (id, value) => {
     setReplyText((prev) => ({ ...prev, [id]: value }));
   };
@@ -145,7 +146,7 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">{appName}</h1>
 
-      {/* ✅ Filters + Search */}
+      {/* Filters + Search */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 mb-4">
         <input
           type="text"
@@ -167,7 +168,7 @@ export default function AdminDashboard() {
         </select>
       </div>
 
-      {/* ✅ Top Buttons */}
+      {/* Top Buttons */}
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => {
@@ -192,7 +193,7 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ✅ Applications Table */}
+      {/* Applications Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 border-b">
@@ -225,9 +226,7 @@ export default function AdminDashboard() {
                         View Proof of Payment
                       </a>
                     ) : (
-                      <p className="text-xs text-gray-400 italic">
-                        No proof uploaded
-                      </p>
+                      <p className="text-xs text-gray-400 italic">No proof uploaded</p>
                     )}
 
                     {app.resumeFile ? (
