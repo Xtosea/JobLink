@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const apiBase = process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
