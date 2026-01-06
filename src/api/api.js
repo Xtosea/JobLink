@@ -13,6 +13,8 @@ const API = axios.create({
 // 🧩 Applicant APIs
 export const createApplication = (data) => API.post("/applications", data);
 
+export const submitApplication = (data) => API.post("/applications", data);
+
 export const uploadFiles = (id, formData) =>
   API.post(`/applications/upload/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
