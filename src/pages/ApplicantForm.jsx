@@ -1,6 +1,7 @@
+// pages/ApplicantForm.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { submitApplication } from "../api/api";
+import { createApplication } from "../api/api";
 
 export default function ApplicantForm() {
   const [form, setForm] = useState({
@@ -10,24 +11,35 @@ export default function ApplicantForm() {
     jobType: "",
     jobPosition: "",
   });
+
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await createApplication(form);
-    console.log("CREATE RESPONSE:", res.data);
+  // ✅ MUST exist
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-    navigate(`/upload?id=${res.data.application._id}`);
-  } catch (err) {
-    console.error(err);
-    alert("Error submitting application");
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await createApplication(form);
+
+      console.log("CREATE RESPONSE:", res.data);
+
+      navigate(`/upload?id=${res.data.application._id}`);
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting application");
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-3">Applicant Submission</h2>
+
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           name="fullname"
@@ -37,6 +49,7 @@ export default function ApplicantForm() {
           placeholder="Full name"
           className="w-full p-2 border rounded"
         />
+
         <input
           type="email"
           name="email"
@@ -46,6 +59,7 @@ export default function ApplicantForm() {
           placeholder="Email"
           className="w-full p-2 border rounded"
         />
+
         <input
           name="mobile"
           value={form.mobile}
@@ -54,6 +68,7 @@ export default function ApplicantForm() {
           placeholder="Mobile"
           className="w-full p-2 border rounded"
         />
+
         <select
           name="jobType"
           value={form.jobType}
@@ -65,14 +80,16 @@ export default function ApplicantForm() {
           <option value="Full-time">Full-time</option>
           <option value="Part-time">Part-time</option>
         </select>
+
         <input
           name="jobPosition"
           value={form.jobPosition}
           onChange={handleChange}
           required
-          placeholder="Job Position"
+          placeholder="Type of job position"
           className="w-full p-2 border rounded"
         />
+
         <button
           type="submit"
           className="w-full p-2 bg-blue-600 text-white rounded"
