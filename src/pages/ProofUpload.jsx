@@ -25,7 +25,8 @@ export default function ProofUpload() {
     e.preventDefault();
 
     if (!proofFile || !resumeFile) {
-      return alert("Upload both files");
+      alert("Please upload both files");
+      return;
     }
 
     try {
@@ -36,7 +37,11 @@ export default function ProofUpload() {
       await axios.patch(
         `https://joblinkbackend.onrender.com/api/applications/upload/${id}`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       alert("Application submitted successfully");
@@ -52,37 +57,6 @@ export default function ProofUpload() {
       <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input type="file" onChange={(e) => setProofFile(e.target.files[0])} />
-        <input type="file" onChange={(e) => setResumeFile(e.target.files[0])} />
-        <button className="w-full p-2 bg-green-600 text-white rounded">
-          Submit
-        </button>
-      </form>
-    </div>
-  );
-}      // Upload Resume File
-      const resumeRef = ref(storage, `resumes/${Date.now()}-${resumeFile.name}`);
-      await uploadBytes(resumeRef, resumeFile);
-      const resumeUrl = await getDownloadURL(resumeRef);
-
-      // Save URLs in backend
-      await axios.patch(
-        `https://joblinkbackend.onrender.com/api/applications/upload/${id}`,
-        { proofFile: proofUrl, resumeFile: resumeUrl }
-      );
-
-      alert("Files uploaded successfully!");
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      alert("Upload failed");
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label className="block mb-1">Proof of Payment</label>
           <input
@@ -92,6 +66,7 @@ export default function ProofUpload() {
             required
           />
         </div>
+
         <div>
           <label className="block mb-1">CV / Resume</label>
           <input
@@ -101,8 +76,12 @@ export default function ProofUpload() {
             required
           />
         </div>
-        <button type="submit" className="w-full p-2 bg-green-600 text-white rounded">
-          Submit Application
+
+        <button
+          type="submit"
+          className="w-full p-2 bg-green-600 text-white rounded"
+        >
+          Submit
         </button>
       </form>
     </div>
