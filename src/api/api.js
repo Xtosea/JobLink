@@ -14,10 +14,11 @@ const API = axios.create({
 export const createApplication = (data) =>
   API.post("/applications", data);
 
-export const uploadFiles = (id, formData) =>
-  API.post(`/applications/upload/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const createApplication = (data) => API.post("/applications", data);
+
+export const uploadFiles = (id, formData) => API.post(`/applications/upload/${id}`, formData, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
 
 // 🧩 Admin APIs
 export const adminLogin = (creds) => API.post("/admin/login", creds);
