@@ -1,7 +1,4 @@
-// src/pages/ProofUpload.jsx
 import React, { useState, useEffect } from "react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -19,22 +16,51 @@ export default function ProofUpload() {
 
   useEffect(() => {
     if (!id) {
-      alert("Missing application ID. Redirecting...");
+      alert("Missing application ID");
       navigate("/");
     }
   }, [id, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!proofFile || !resumeFile) return alert("Please upload both files");
+
+    if (!proofFile || !resumeFile) {
+      return alert("Upload both files");
+    }
 
     try {
-      // Upload Proof File
-      const proofRef = ref(storage, `proofs/${Date.now()}-${proofFile.name}`);
-      await uploadBytes(proofRef, proofFile);
-      const proofUrl = await getDownloadURL(proofRef);
+      const formData = new FormData();
+      formData.append("proofFile", proofFile);
+      formData.append("resumeFile", resumeFile);
 
-      // Upload Resume File
+      await axios.patch(
+        `https://joblinkbackend.onrender.com/api/applications/upload/${id}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      alert("Application submitted successfully");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed");
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
+      <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input type="file" onChange={(e) => setProofFile(e.target.files[0])} />
+        <input type="file" onChange={(e) => setResumeFile(e.target.files[0])} />
+        <button className="w-full p-2 bg-green-600 text-white rounded">
+          Submit
+        </button>
+      </form>
+    </div>
+  );
+}      // Upload Resume File
       const resumeRef = ref(storage, `resumes/${Date.now()}-${resumeFile.name}`);
       await uploadBytes(resumeRef, resumeFile);
       const resumeUrl = await getDownloadURL(resumeRef);
