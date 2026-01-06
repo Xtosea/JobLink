@@ -1,6 +1,7 @@
+// pages/ProofUpload.jsx
 import React, { useState, useEffect } from "react";
-import { uploadFiles } from "../api/api";
 import { useLocation, useNavigate } from "react-router-dom";
+import { uploadFiles } from "../api/api";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -8,7 +9,7 @@ function useQuery() {
 
 export default function ProofUpload() {
   const query = useQuery();
-  const id = query.get("id");
+  const id = query.get("id"); // must match /upload/:id
   const navigate = useNavigate();
 
   const [proofFile, setProofFile] = useState(null);
@@ -30,46 +31,22 @@ export default function ProofUpload() {
       formData.append("proofFile", proofFile);
       formData.append("resumeFile", resumeFile);
 
-      await uploadFiles(id, formData);
+      const res = await uploadFiles(id, formData); // id matches route param
+
+      console.log("UPLOAD RESPONSE:", res.data);
       alert("Files uploaded successfully!");
       navigate("/");
     } catch (err) {
-      console.error(err);
+      console.error("UPLOAD ERROR:", err);
       alert("Upload failed");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div>
-          <label className="block mb-1">Proof of Payment</label>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) => setProofFile(e.target.files[0])}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">CV / Resume</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setResumeFile(e.target.files[0])}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full p-2 bg-green-600 text-white rounded"
-        >
-          Submit Application
-        </button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input type="file" onChange={(e) => setProofFile(e.target.files[0])} required />
+      <input type="file" onChange={(e) => setResumeFile(e.target.files[0])} required />
+      <button type="submit">Submit</button>
+    </form>
   );
 }
