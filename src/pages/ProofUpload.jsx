@@ -1,7 +1,9 @@
-// pages/ProofUpload.jsx
+// src/pages/ProofUpload.jsx
 import React, { useState, useEffect } from "react";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase";
 import { useLocation, useNavigate } from "react-router-dom";
-import { uploadFiles } from "../api/api";
+import axios from "axios";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -9,7 +11,7 @@ function useQuery() {
 
 export default function ProofUpload() {
   const query = useQuery();
-  const id = query.get("id"); // must match /upload/:id
+  const id = query.get("id");
   const navigate = useNavigate();
 
   const [proofFile, setProofFile] = useState(null);
@@ -27,26 +29,56 @@ export default function ProofUpload() {
     if (!proofFile || !resumeFile) return alert("Please upload both files");
 
     try {
-      const formData = new FormData();
-      formData.append("proofFile", proofFile);
-      formData.append("resumeFile", resumeFile);
+      // Upload Proof File
+      const proofRef = ref(storage, `proofs/${Date.now()}-${proofFile.name}`);
+      await uploadBytes(proofRef, proofFile);
+      const proofUrl = await getDownloadURL(proofRef);
 
-      const res = await uploadFiles(id, formData); // id matches route param
+      // Upload Resume File
+      const resumeRef = ref(storage, `resumes/${Date.now()}-${resumeFile.name}`);
+      await uploadBytes(resumeRef, resumeFile);
+      const resumeUrl = await getDownloadURL(resumeRef);
 
-      console.log("UPLOAD RESPONSE:", res.data);
+      // Save URLs in backend
+      await axios.patch(
+        `https://joblinkbackend.onrender.com/api/applications/upload/${id}`,
+        { proofFile: proofUrl, resumeFile: resumeUrl }
+      );
+
       alert("Files uploaded successfully!");
       navigate("/");
     } catch (err) {
-      console.error("UPLOAD ERROR:", err);
+      console.error(err);
       alert("Upload failed");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="file" onChange={(e) => setProofFile(e.target.files[0])} required />
-      <input type="file" onChange={(e) => setResumeFile(e.target.files[0])} required />
-      <button type="submit">Submit</button>
-    </form>
+    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
+      <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label className="block mb-1">Proof of Payment</label>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) => setProofFile(e.target.files[0])}
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">CV / Resume</label>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => setResumeFile(e.target.files[0])}
+            required
+          />
+        </div>
+        <button type="submit" className="w-full p-2 bg-green-600 text-white rounded">
+          Submit Application
+        </button>
+      </form>
+    </div>
   );
 }
