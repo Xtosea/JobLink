@@ -1,0 +1,10 @@
+[
+  {
+    "origin": [
+      "https://joblinknigeria.vercel.app",
+      "http://localhost:3000"
+    ],
+    "method": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    "maxAgeSeconds": 3600
+  }
+]
