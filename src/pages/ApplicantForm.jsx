@@ -29,7 +29,7 @@ export default function ApplicantForm() {
 
       console.log("CREATE RESPONSE:", res.data);
 
-      navigate(`/upload?id=${res.data.application._id}`);
+      navigate(`/upload?id=${res.data._id}`);
     } catch (err) {
       console.error(err);
       alert("Error submitting application");
