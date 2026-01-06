@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { uploadFiles } from '../api/api';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { uploadFiles } from "../api/api";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -8,33 +8,34 @@ function useQuery() {
 
 export default function ProofUpload() {
   const query = useQuery();
-  const id = query.get('id');
+  const id = query.get("id");
   const navigate = useNavigate();
 
   const [proofFile, setProofFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
 
   useEffect(() => {
-    if (!id) navigate('/'); // redirect if no ID
+    if (!id) {
+      alert("Missing application ID. Redirecting...");
+      navigate("/");
+    }
   }, [id, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!id) return alert('Missing application ID.');
-
-    if (!proofFile || !resumeFile) return alert('Please upload both files.');
+    if (!proofFile || !resumeFile) return alert("Please upload both files");
 
     try {
       const formData = new FormData();
-      formData.append('proofFile', proofFile);
-      formData.append('resumeFile', resumeFile);
+      formData.append("proofFile", proofFile);
+      formData.append("resumeFile", resumeFile);
 
       await uploadFiles(id, formData);
-      alert('Files uploaded successfully!');
-      navigate('/'); // redirect to applicant dashboard or confirmation page
+      alert("Files uploaded successfully!");
+      navigate("/");
     } catch (err) {
       console.error(err);
-      alert('Upload failed');
+      alert("Upload failed");
     }
   };
 
