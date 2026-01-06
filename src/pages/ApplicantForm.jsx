@@ -12,23 +12,18 @@ export default function ApplicantForm() {
   });
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await submitApplication(form);
+  e.preventDefault();
+  try {
+    const res = await createApplication(form);
+    console.log("CREATE RESPONSE:", res.data);
 
-      const id = res.data.application._id; // ✅ matches backend
-      if (!id) return alert("Missing application ID from server.");
-
-      navigate(`/upload?id=${id}`);
-    } catch (err) {
-      console.error(err);
-      alert("Error submitting application");
-    }
-  };
+    navigate(`/upload?id=${res.data.application._id}`);
+  } catch (err) {
+    console.error(err);
+    alert("Error submitting application");
+  }
+};
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
