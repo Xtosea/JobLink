@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { jsPDF } from "jspdf";
 import { AuthContext } from "../context/AuthContext";
-import { listApplications, replyToApplication, resendApplicationEmail } from "../api/api";
+import {
+  listApplications,
+  replyToApplication,
+  resendApplicationEmail,
+} from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -68,10 +72,11 @@ export default function AdminDashboard() {
     }
   };
 
+  // ✅ Resend Email
   const handleResendEmail = async (id) => {
     try {
       await resendApplicationEmail(id, token);
-      alert("Email resent successfully!");
+      alert("Application email resent successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to resend email.");
@@ -96,15 +101,6 @@ export default function AdminDashboard() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-
-  // ✅ Expiry helpers
-  const isExpired = (app) => new Date(app.tokenExpiresAt) < new Date();
-  const isNearExpiry = (app) => {
-    const now = new Date();
-    const expiry = new Date(app.tokenExpiresAt);
-    const diff = expiry - now;
-    return diff > 0 && diff <= 24 * 60 * 60 * 1000; // within 24h
-  };
 
   // ✅ Generate PDF
   const generatePDF = (apps, filename) => {
@@ -205,7 +201,7 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* Applications Table */}
+      {/* Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 border-b">
@@ -217,62 +213,54 @@ export default function AdminDashboard() {
               <th className="px-4 py-3 text-center font-semibold">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {paginated.map((app) => (
-              <tr
-                key={app._id}
-                className={`border-b hover:bg-gray-50 ${
-                  isExpired(app)
-                    ? "bg-red-50"
-                    : isNearExpiry(app)
-                    ? "bg-yellow-50"
-                    : ""
-                }`}
-              >
+              <tr key={app._id} className="border-b hover:bg-gray-50">
+                {/* Applicant Info */}
                 <td className="px-4 py-3">
-                  <p className="font-semibold">{app.fullname}</p>
-                  <p className="text-sm text-gray-500">{app.email}</p>
-                  <p className="text-sm text-gray-400">{app.mobile}</p>
+                  <div>
+                    <p className="font-semibold">{app.fullname}</p>
+                    <p className="text-sm text-gray-500">{app.email}</p>
+                    <p className="text-sm text-gray-400">{app.mobile}</p>
 
-                  {isExpired(app) && (
-                    <p className="text-xs text-red-500 font-semibold mt-1">Expired</p>
-                  )}
-                  {isNearExpiry(app) && !isExpired(app) && (
-                    <p className="text-xs text-yellow-600 font-semibold mt-1">Expires Soon</p>
-                  )}
+                    {/* Uploaded files */}
+                    <div className="mt-2 space-y-1">
+                      {app.proofFile ? (
+                        <a
+                          href={app.proofFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-sm text-blue-600 underline"
+                        >
+                          View Proof of Payment
+                        </a>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">
+                          No proof uploaded
+                        </p>
+                      )}
 
-                  {/* Uploaded files */}
-                  <div className="mt-2 space-y-1">
-                    {app.proofFile ? (
-                      <a
-                        href={app.proofFile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-sm text-blue-600 underline"
-                      >
-                        View Proof of Payment
-                      </a>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic">No proof uploaded</p>
-                    )}
-
-                    {app.resumeFile ? (
-                      <a
-                        href={app.resumeFile}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-sm text-green-600 underline"
-                      >
-                        View CV / Resume
-                      </a>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic">No CV uploaded</p>
-                    )}
+                      {app.resumeFile ? (
+                        <a
+                          href={app.resumeFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-sm text-green-600 underline"
+                        >
+                          View CV / Resume
+                        </a>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">No CV uploaded</p>
+                      )}
+                    </div>
                   </div>
                 </td>
 
+                {/* Job Info */}
                 <td className="px-4 py-3">{app.jobType}</td>
 
+                {/* Reply Section */}
                 <td className="px-4 py-3">
                   <textarea
                     placeholder="Write reply..."
@@ -282,6 +270,7 @@ export default function AdminDashboard() {
                   />
                 </td>
 
+                {/* Status */}
                 <td className="px-4 py-3">
                   <select
                     value={app.status || "Pending"}
@@ -303,16 +292,17 @@ export default function AdminDashboard() {
                   </select>
                 </td>
 
-                <td className="px-4 py-3 text-center space-y-1">
+                {/* Actions */}
+                <td className="px-4 py-3 text-center space-x-1">
                   <button
                     onClick={() => handleReply(app._id)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm block w-full"
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
                   >
                     Send Reply
                   </button>
                   <button
                     onClick={() => handleResendEmail(app._id)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm block w-full"
+                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 text-sm"
                   >
                     Resend Email
                   </button>
