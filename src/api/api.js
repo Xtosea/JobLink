@@ -3,7 +3,7 @@ import axios from "axios";
 // ✅ Automatically use localhost in development and Render in production
 const BASE =
   process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_API_URL // e.g., https://joblinknigeria.onrender.com/api
+    ? process.env.REACT_APP_API_URL // e.g., https://joblinkbackend.onrender.com/api
     : process.env.REACT_APP_API_LOCAL; // e.g., http://localhost:5000/api
 
 const API = axios.create({
@@ -13,8 +13,8 @@ const API = axios.create({
 // 🧩 Applicant APIs
 export const createApplication = (data) => API.post("/applications", data);
 
-export const uploadFiles = (id, formData) =>
-  API.post(`/applications/upload/${id}`, formData, {
+export const uploadFiles = (token, formData) =>
+  API.patch(`/applications/upload/${token}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
