@@ -1,7 +1,5 @@
-// pages/ApplicantForm.jsx
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createApplication } from "../api/api";
+import { useState } from "react";
+import axios from "axios";
 
 export default function ApplicantForm() {
   const [form, setForm] = useState({
@@ -12,91 +10,31 @@ export default function ApplicantForm() {
     jobPosition: "",
   });
 
-  const navigate = useNavigate();
-
-  // ✅ MUST exist
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const submit = async e => {
     e.preventDefault();
     try {
-      const res = await createApplication(form);
-
-      console.log("CREATE RESPONSE:", res.data);
-
-      navigate(`/upload?id=${res.data.application._id}`);
+      await axios.post(
+        `${process.env.REACT_APP_API}/applications`,
+        form
+      );
+      alert("Application submitted. Check your email!");
     } catch (err) {
-      console.error(err);
-      alert("Error submitting application");
+      alert(err.response?.data?.message || "Submission failed");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-3">Applicant Submission</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="fullname"
-          value={form.fullname}
-          onChange={handleChange}
-          required
-          placeholder="Full name"
-          className="w-full p-2 border rounded"
-        />
-
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-        />
-
-        <input
-          name="mobile"
-          value={form.mobile}
-          onChange={handleChange}
-          required
-          placeholder="Mobile"
-          className="w-full p-2 border rounded"
-        />
-
-        <select
-          name="jobType"
-          value={form.jobType}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded"
-        >
-          <option value="">Select Job Type</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-        </select>
-
-        <input
-          name="jobPosition"
-          value={form.jobPosition}
-          onChange={handleChange}
-          required
-          placeholder="Type of job position"
-          className="w-full p-2 border rounded"
-        />
-
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-600 text-white rounded"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+    <form onSubmit={submit} className="max-w-md mx-auto p-4 space-y-3">
+      <input placeholder="Full Name" onChange={e => setForm({...form, fullname: e.target.value})} />
+      <input placeholder="Email" onChange={e => setForm({...form, email: e.target.value})} />
+      <input placeholder="Mobile" onChange={e => setForm({...form, mobile: e.target.value})} />
+      <select onChange={e => setForm({...form, jobType: e.target.value})}>
+        <option value="">Select Job Type</option>
+        <option>Full-time</option>
+        <option>Part-time</option>
+      </select>
+      <input placeholder="Job Position" onChange={e => setForm({...form, jobPosition: e.target.value})} />
+      <button className="btn">Submit Application</button>
+    </form>
   );
 }
