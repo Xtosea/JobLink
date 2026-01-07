@@ -1,57 +1,70 @@
-// src/pages/ProofUpload.jsx
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function ProofUpload() {
-  const { token } = useParams(); // email token
-  const [app, setApp] = useState(null);
+  const { token } = useParams(); // token from email link
+  const navigate = useNavigate();
+
+  const [application, setApplication] = useState(null);
   const [proofFile, setProofFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
 
-  const API = process.env.REACT_APP_API_BASE;
+  const apiBase = process.env.REACT_APP_API_BASE;
 
-  // Load application by token
   useEffect(() => {
-    axios
-      .get(`${API}/api/applications/access/${token}`)
-      .then(res => setApp(res.data))
-      .catch(() => alert("Link expired or invalid"));
-  }, [token]);
+    const fetchApp = async () => {
+      try {
+        const res = await axios.get(`${apiBase}/api/applications/access/${token}`);
+        setApplication(res.data);
+      } catch (err) {
+        console.error(err);
+        alert("Invalid or expired link");
+        navigate("/");
+      }
+    };
+    fetchApp();
+  }, [token, navigate, apiBase]);
 
-  const submit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!proofFile || !resumeFile) {
-      return alert("Select both files");
+    if (!proofFile || !resumeFile) return alert("Please select both files");
+
+    const formData = new FormData();
+    formData.append("proofFile", proofFile);
+    formData.append("resumeFile", resumeFile);
+
+    try {
+      await axios.patch(`${apiBase}/api/applications/upload/${token}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Files uploaded successfully!");
+      navigate("/history");
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed. Please try again");
     }
-
-    const fd = new FormData();
-    fd.append("proofFile", proofFile);
-    fd.append("resumeFile", resumeFile);
-
-    await axios.patch(
-      `${API}/api/applications/upload/${token}`,
-      fd
-    );
-
-    alert("Files uploaded successfully");
   };
 
-  if (!app) return null;
+  if (!application) return <p>Loading...</p>;
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
-
-      <p>
-        Hello <b>{app.fullname}</b>, upload your files for
-        <b> {app.jobPosition}</b>
+      <p className="mb-3 text-gray-700">
+        Hello {application.fullname}, upload your <strong>Proof of Payment</strong> and <strong>Resume/CV</strong> for <strong>{application.jobPosition}</strong>.
       </p>
 
-      <form onSubmit={submit} className="space-y-3 mt-3">
-        <input type="file" onChange={e => setProofFile(e.target.files[0])} required />
-        <input type="file" onChange={e => setResumeFile(e.target.files[0])} required />
-        <button className="btn w-full">Submit Files</button>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label>Proof of Payment</label>
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={e => setProofFile(e.target.files[0])} required />
+        </div>
+        <div>
+          <label>Resume/CV</label>
+          <input type="file" accept=".pdf,.doc,.docx" onChange={e => setResumeFile(e.target.files[0])} required />
+        </div>
+        <button type="submit" className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700">Upload Files</button>
       </form>
     </div>
   );
