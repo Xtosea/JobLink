@@ -1,113 +1,57 @@
 // src/pages/ProofUpload.jsx
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 export default function ProofUpload() {
-  const { token, user } = useContext(AuthContext);
-  const query = useQuery();
-  const id = query.get("id"); // application ID from email link
-  const navigate = useNavigate();
-
+  const { token } = useParams(); // email token
+  const [app, setApp] = useState(null);
   const [proofFile, setProofFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
-  const [application, setApplication] = useState(null);
 
-  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API = process.env.REACT_APP_API_BASE;
 
-  // ✅ Load application and check ownership
+  // Load application by token
   useEffect(() => {
-    if (!token) return navigate("/login");
-    if (!id) {
-      alert("Missing application ID.");
-      return navigate("/");
-    }
+    axios
+      .get(`${API}/api/applications/access/${token}`)
+      .then(res => setApp(res.data))
+      .catch(() => alert("Link expired or invalid"));
+  }, [token]);
 
-    const fetchApplication = async () => {
-      try {
-        const res = await axios.get(`${apiBase}/api/applications/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data.user !== user._id) {
-          alert("You are not allowed to upload files for this application.");
-          return navigate("/");
-        }
-        setApplication(res.data);
-      } catch (err) {
-        console.error(err);
-        alert("Failed to load application.");
-        navigate("/");
-      }
-    };
-    fetchApplication();
-  }, [id, token, user, navigate]);
-
-  const handleSubmit = async (e) => {
+  const submit = async e => {
     e.preventDefault();
-    if (!proofFile || !resumeFile) return alert("Please select both files.");
-
-    const formData = new FormData();
-    formData.append("proofFile", proofFile);
-    formData.append("resumeFile", resumeFile);
-
-    try {
-      const res = await axios.patch(`${apiBase}/api/applications/upload/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      alert("Files uploaded successfully!");
-      navigate("/history"); // redirect to applicant history page
-    } catch (err) {
-      console.error(err);
-      alert("Upload failed. Please try again.");
+    if (!proofFile || !resumeFile) {
+      return alert("Select both files");
     }
+
+    const fd = new FormData();
+    fd.append("proofFile", proofFile);
+    fd.append("resumeFile", resumeFile);
+
+    await axios.patch(
+      `${API}/api/applications/upload/${token}`,
+      fd
+    );
+
+    alert("Files uploaded successfully");
   };
+
+  if (!app) return null;
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
 
-      {application && (
-        <p className="mb-3 text-gray-700">
-          Hello {user.fullname}, please upload your <strong>Proof of Payment</strong> and <strong>Resume/CV</strong> for your application to <strong>{application.jobPosition}</strong>.
-        </p>
-      )}
+      <p>
+        Hello <b>{app.fullname}</b>, upload your files for
+        <b> {app.jobPosition}</b>
+      </p>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div>
-          <label className="block mb-1 font-medium">Proof of Payment</label>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) => setProofFile(e.target.files[0])}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">CV / Resume</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setResumeFile(e.target.files[0])}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          Submit Files
-        </button>
+      <form onSubmit={submit} className="space-y-3 mt-3">
+        <input type="file" onChange={e => setProofFile(e.target.files[0])} required />
+        <input type="file" onChange={e => setResumeFile(e.target.files[0])} required />
+        <button className="btn w-full">Submit Files</button>
       </form>
     </div>
   );
