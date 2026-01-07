@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { jsPDF } from "jspdf";
 import { AuthContext } from "../context/AuthContext";
-import { listApplications, replyToApplication } from "../api/api";
+import { listApplications, replyToApplication, resendApplicationEmail } from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -68,6 +68,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleResendEmail = async (id) => {
+    try {
+      await resendApplicationEmail(id, token);
+      alert("Email resent successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to resend email.");
+    }
+  };
+
   // ✅ Filter + Pagination
   const filtered = applications.filter((app) => {
     const search = searchTerm.toLowerCase();
@@ -86,6 +96,15 @@ export default function AdminDashboard() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  // ✅ Expiry helpers
+  const isExpired = (app) => new Date(app.tokenExpiresAt) < new Date();
+  const isNearExpiry = (app) => {
+    const now = new Date();
+    const expiry = new Date(app.tokenExpiresAt);
+    const diff = expiry - now;
+    return diff > 0 && diff <= 24 * 60 * 60 * 1000; // within 24h
+  };
 
   // ✅ Generate PDF
   const generatePDF = (apps, filename) => {
@@ -139,7 +158,7 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6">{appName}</h1>
 
-      {/* ✅ Filters */}
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 mb-4">
         <input
           type="text"
@@ -161,7 +180,7 @@ export default function AdminDashboard() {
         </select>
       </div>
 
-      {/* ✅ Top Buttons */}
+      {/* Top Buttons */}
       <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={() => {
@@ -186,7 +205,7 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ✅ Table */}
+      {/* Applications Table */}
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 border-b">
@@ -198,107 +217,121 @@ export default function AdminDashboard() {
               <th className="px-4 py-3 text-center font-semibold">Actions</th>
             </tr>
           </thead>
-
-         <tbody>
-  {paginated.map((app) => (
-    <tr key={app._id} className="border-b hover:bg-gray-50">
-      {/* Applicant Info */}
-      <td className="px-4 py-3">
-        <div>
-          <p className="font-semibold">{app.fullname}</p>
-          <p className="text-sm text-gray-500">{app.email}</p>
-          <p className="text-sm text-gray-400">{app.mobile}</p>
-
-          {/* Uploaded files */}
-          <div className="mt-2 space-y-1">
-            {app.proofFile ? (
-              <a
-                href={app.proofFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-600 underline"
+          <tbody>
+            {paginated.map((app) => (
+              <tr
+                key={app._id}
+                className={`border-b hover:bg-gray-50 ${
+                  isExpired(app)
+                    ? "bg-red-50"
+                    : isNearExpiry(app)
+                    ? "bg-yellow-50"
+                    : ""
+                }`}
               >
-                View Proof of Payment
-              </a>
-            ) : (
-              <p className="text-xs text-gray-400 italic">No proof uploaded</p>
+                <td className="px-4 py-3">
+                  <p className="font-semibold">{app.fullname}</p>
+                  <p className="text-sm text-gray-500">{app.email}</p>
+                  <p className="text-sm text-gray-400">{app.mobile}</p>
+
+                  {isExpired(app) && (
+                    <p className="text-xs text-red-500 font-semibold mt-1">Expired</p>
+                  )}
+                  {isNearExpiry(app) && !isExpired(app) && (
+                    <p className="text-xs text-yellow-600 font-semibold mt-1">Expires Soon</p>
+                  )}
+
+                  {/* Uploaded files */}
+                  <div className="mt-2 space-y-1">
+                    {app.proofFile ? (
+                      <a
+                        href={app.proofFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-blue-600 underline"
+                      >
+                        View Proof of Payment
+                      </a>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">No proof uploaded</p>
+                    )}
+
+                    {app.resumeFile ? (
+                      <a
+                        href={app.resumeFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-green-600 underline"
+                      >
+                        View CV / Resume
+                      </a>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">No CV uploaded</p>
+                    )}
+                  </div>
+                </td>
+
+                <td className="px-4 py-3">{app.jobType}</td>
+
+                <td className="px-4 py-3">
+                  <textarea
+                    placeholder="Write reply..."
+                    value={replyText[app._id] || app.reply || ""}
+                    onChange={(e) => handleReplyChange(app._id, e.target.value)}
+                    className="border rounded p-1 w-full text-sm"
+                  />
+                </td>
+
+                <td className="px-4 py-3">
+                  <select
+                    value={app.status || "Pending"}
+                    onChange={(e) => handleStatusChange(app._id, e.target.value)}
+                    className={`border rounded px-2 py-1 text-sm ${
+                      app.status === "Approved"
+                        ? "bg-blue-100 text-blue-700"
+                        : app.status === "Replied"
+                        ? "bg-green-100 text-green-700"
+                        : app.status === "Declined"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Replied">Replied</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Declined">Declined</option>
+                  </select>
+                </td>
+
+                <td className="px-4 py-3 text-center space-y-1">
+                  <button
+                    onClick={() => handleReply(app._id)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm block w-full"
+                  >
+                    Send Reply
+                  </button>
+                  <button
+                    onClick={() => handleResendEmail(app._id)}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm block w-full"
+                  >
+                    Resend Email
+                  </button>
+                </td>
+              </tr>
+            ))}
+
+            {paginated.length === 0 && (
+              <tr>
+                <td colSpan="7" className="text-center py-6 text-gray-500 italic">
+                  No applications found.
+                </td>
+              </tr>
             )}
-
-            {app.resumeFile ? (
-              <a
-                href={app.resumeFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-green-600 underline"
-              >
-                View CV / Resume
-              </a>
-            ) : (
-              <p className="text-xs text-gray-400 italic">No CV uploaded</p>
-            )}
-          </div>
-        </div>
-      </td>
-
-      {/* Job Info */}
-      <td className="px-4 py-3">{app.jobType}</td>
-
-      {/* Reply Section */}
-      <td className="px-4 py-3">
-        <textarea
-          placeholder="Write reply..."
-          value={replyText[app._id] || app.reply || ""}
-          onChange={(e) => handleReplyChange(app._id, e.target.value)}
-          className="border rounded p-1 w-full text-sm"
-        />
-      </td>
-
-      {/* Status */}
-      <td className="px-4 py-3">
-        <select
-          value={app.status || "Pending"}
-          onChange={(e) => handleStatusChange(app._id, e.target.value)}
-          className={`border rounded px-2 py-1 text-sm ${
-            app.status === "Approved"
-              ? "bg-blue-100 text-blue-700"
-              : app.status === "Replied"
-              ? "bg-green-100 text-green-700"
-              : app.status === "Declined"
-              ? "bg-red-100 text-red-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
-        >
-          <option value="Pending">Pending</option>
-          <option value="Replied">Replied</option>
-          <option value="Approved">Approved</option>
-          <option value="Declined">Declined</option>
-        </select>
-      </td>
-
-      {/* Actions */}
-      <td className="px-4 py-3 text-center">
-        <button
-          onClick={() => handleReply(app._id)}
-          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-        >
-          Send Reply
-        </button>
-      </td>
-    </tr>
-  ))}
-
-  {paginated.length === 0 && (
-    <tr>
-      <td colSpan="7" className="text-center py-6 text-gray-500 italic">
-        No applications found.
-      </td>
-    </tr>
-  )}
-</tbody>
+          </tbody>
         </table>
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
           <button
