@@ -1,18 +1,14 @@
-import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function History() {
-  const { token } = useContext(AuthContext);
+export default function History({ token }) {
   const [apps, setApps] = useState([]);
 
   useEffect(() => {
     if (!token) return;
-    axios.get(`${process.env.REACT_APP_API_BASE}/api/applications/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then(res => setApps(res.data))
-    .catch(console.error);
+    axios.get(`${process.env.REACT_APP_API_BASE}/api/applications/access/${token}`)
+      .then(res => setApps([res.data])) // single application per token
+      .catch(console.error);
   }, [token]);
 
   return (
