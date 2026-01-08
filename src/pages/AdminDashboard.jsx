@@ -5,7 +5,7 @@ import {
   listApplications,
   replyToApplication,
   resendApplicationEmail,
-} from "../api/api";
+} from "../api/adminApi";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
