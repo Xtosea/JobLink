@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { listApplications, replyToApplication } from '../api/api';
+import {
+  listApplications,
+  replyToApplication,
+  resendApplicationEmail,
+} from "../api/adminApi";
 
 export default function ReplyPage() {
   const [apps, setApps] = useState([]);
