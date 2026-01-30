@@ -28,7 +28,16 @@ export default function ApplicantForm() {
     setSuccessMsg("");
 
     try {
-      await axios.post(`${API_BASE}/api/applications`, form);
+      await axios.post(
+  `${API_BASE}/api/applications`,
+  form,
+  {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: false,
+  }
+);
       setSuccessMsg("Application submitted successfully. Check your email for next steps.");
       setForm({
         fullname: "",
