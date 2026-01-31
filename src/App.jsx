@@ -13,30 +13,26 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
-  // Track last submitted applicant ID (optional, for showing upload link)
-  const [applicationId, setApplicationId] = useState(null);
+  const [applicationToken, setApplicationToken] = useState(null);
 
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 p-6">
+
         {/* ================= NAVIGATION ================= */}
         <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
-          {/* Applicant Links */}
+          {/* Applicant */}
           <Link to="/apply" className="underline">
             Apply
           </Link>
 
-          {applicationId && (
-            <Link to={`/applicant/upload?id=${applicationId}`} className="underline">
-              Upload
+          {applicationToken && (
+            <Link to={`/upload/${applicationToken}`} className="underline">
+              Upload Proof
             </Link>
           )}
 
-          <Link to="/history/:token" className="underline">
-            My History
-          </Link>
-
-          {/* Admin Links */}
+          {/* Admin */}
           <Link to="/reply" className="underline">
             Admin Reply
           </Link>
@@ -53,18 +49,30 @@ export default function App() {
           {/* Applicant Routes */}
           <Route
             path="/apply"
-            element={<ApplicantForm setApplicationId={setApplicationId} />}
+            element={<ApplicantForm setApplicationToken={setApplicationToken} />}
           />
-          <Route path="/applicant/:token" element={<ProofUpload />} />
-          <Route path="/history/:token" element={<HistoryPage />} />
+
+          {/* ✅ THIS IS THE IMPORTANT ROUTE */}
+          <Route
+            path="/upload/:token"
+            element={<ProofUpload />}
+          />
+
+          <Route
+            path="/history/:token"
+            element={<HistoryPage />}
+          />
 
           {/* Admin Routes */}
           <Route path="/reply" element={<ReplyPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
 
-          {/* Optional: redirect "/" to apply */}
-          <Route path="/" element={<ApplicantForm setApplicationId={setApplicationId} />} />
+          {/* Default */}
+          <Route
+            path="/"
+            element={<ApplicantForm setApplicationToken={setApplicationToken} />}
+          />
         </Routes>
       </div>
     </Router>
