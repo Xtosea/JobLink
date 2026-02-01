@@ -2,9 +2,19 @@ import axios from "axios";
 
 const API_BASE =
   process.env.REACT_APP_API_BASE ||
-  "https://joblinkbackend.onrender.com";
+  "https://joblinknigeria.onrender.com"; // make sure this matches your deployed backend
 
-// ✅ ADMIN: LIST APPLICATIONS
+// ================== ADMIN LOGIN ==================
+export const adminLogin = async (data) => {
+  return axios.post(`${API_BASE}/api/admin/login`, data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true, // needed if backend uses credentials
+  });
+};
+
+// ================== ADMIN: LIST APPLICATIONS ==================
 export const listApplications = (token) =>
   axios.get(`${API_BASE}/api/admin/applications`, {
     headers: {
@@ -12,7 +22,7 @@ export const listApplications = (token) =>
     },
   });
 
-// ✅ ADMIN: UPDATE / REPLY
+// ================== ADMIN: UPDATE / REPLY ==================
 export const replyToApplication = (id, data, token) =>
   axios.put(`${API_BASE}/api/admin/applications/${id}`, data, {
     headers: {
@@ -20,7 +30,7 @@ export const replyToApplication = (id, data, token) =>
     },
   });
 
-// ✅ ADMIN: RESEND EMAIL
+// ================== ADMIN: RESEND EMAIL ==================
 export const resendApplicationEmail = (id, token) =>
   axios.patch(
     `${API_BASE}/api/admin/applications/resend/${id}`,
