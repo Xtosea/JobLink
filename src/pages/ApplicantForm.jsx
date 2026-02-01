@@ -6,41 +6,79 @@ const API_BASE =
     ? "https://joblinkbackend.onrender.com"
     : "http://localhost:5000";
 
-// Job positions grouped by type
+// Full list of Nigerian job positions (alphabetical) with Other option
 const JOB_POSITIONS_BY_TYPE = {
   "Full-time": [
+    "Accountant",
     "Admin Assistant",
+    "Advertising Executive",
+    "Agricultural Officer",
+    "Airline Cabin Crew",
+    "Analyst",
+    "Architect",
+    "Art Director",
     "Backend Developer",
+    "Bank Teller",
+    "Barista",
     "Business Development Executive",
+    "Call Center Agent",
     "Cleaner / Housekeeper",
     "Content Creator",
+    "Content Writer",
+    "Construction Worker",
     "Customer Support Officer",
     "Data Analyst",
+    "Data Entry Clerk",
     "Delivery Rider / Messenger",
     "Digital Marketer",
     "Driver",
     "Electrician",
+    "Event Planner",
     "Event Staff",
+    "Fashion Designer",
     "Finance Officer",
+    "Front Desk Officer",
     "Frontend Developer",
     "Full Stack Developer",
     "Gardener / Groundskeeper",
     "Graphic Designer",
+    "Hair Stylist / Barber",
     "HR Officer",
+    "IT Support",
+    "Junior Developer",
+    "Lawyer",
+    "Logistics Officer",
+    "Machine Operator",
+    "Maintenance Officer",
+    "Manager",
+    "Marketing Executive",
     "Mobile App Developer",
     "Nurse",
+    "Nutritionist",
+    "Operations Officer",
+    "Office Assistant",
+    "Photographer",
     "Procurement Officer",
     "Project Coordinator",
+    "Public Relations Officer",
     "Receptionist",
+    "Research Analyst",
+    "Sales Associate",
+    "Sales Executive",
     "Security Officer",
+    "Social Media Manager",
     "Store Attendant",
     "Teacher",
-    "Tutor",
+    "Technician",
+    "Translator / Interpreter",
     "UI/UX Designer",
+    "Volunteer Fundraiser",
     "Warehouse Worker",
     "Waiter / Waitress",
-    "Other",
+    "Web Developer",
+    "Other"
   ].sort(),
+
   "Part-time": [
     "Administrative Assistant",
     "Cleaner / Housekeeper",
@@ -53,8 +91,8 @@ const JOB_POSITIONS_BY_TYPE = {
     "Social Media Manager",
     "Tutor",
     "Volunteer Fundraiser",
-    "Other",
-  ].sort(),
+    "Other"
+  ].sort()
 };
 
 export default function ApplicantForm() {
@@ -67,11 +105,7 @@ export default function ApplicantForm() {
   });
 
   const [jobOptions, setJobOptions] = useState(JOB_POSITIONS_BY_TYPE["Full-time"]);
-  const [filteredJobOptions, setFilteredJobOptions] = useState(jobOptions);
   const [showOtherJob, setShowOtherJob] = useState(false);
-  const [jobSearchTerm, setJobSearchTerm] = useState("");
-  const [typeSearchTerm, setTypeSearchTerm] = useState("");
-  const [filteredTypeOptions, setFilteredTypeOptions] = useState(Object.keys(JOB_POSITIONS_BY_TYPE).sort());
 
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -80,28 +114,9 @@ export default function ApplicantForm() {
   useEffect(() => {
     const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
     setJobOptions(options);
-    setFilteredJobOptions(options);
     setForm((prev) => ({ ...prev, jobPosition: "" }));
     setShowOtherJob(false);
-    setJobSearchTerm("");
   }, [form.jobType]);
-
-  // Filter job positions alphabetically
-  useEffect(() => {
-    const filtered = jobOptions
-      .filter((opt) => opt.toLowerCase().includes(jobSearchTerm.toLowerCase()))
-      .sort();
-    setFilteredJobOptions(filtered);
-  }, [jobSearchTerm, jobOptions]);
-
-  // Filter job types alphabetically
-  useEffect(() => {
-    const allTypes = Object.keys(JOB_POSITIONS_BY_TYPE).sort();
-    const filtered = allTypes.filter((type) =>
-      type.toLowerCase().includes(typeSearchTerm.toLowerCase())
-    );
-    setFilteredTypeOptions(filtered);
-  }, [typeSearchTerm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -144,8 +159,6 @@ export default function ApplicantForm() {
         jobType: "Full-time",
         jobPosition: "",
       });
-      setJobSearchTerm("");
-      setTypeSearchTerm("");
     } catch (err) {
       alert(err.response?.data?.message || "Submission failed");
     } finally {
@@ -193,15 +206,10 @@ export default function ApplicantForm() {
         <div className="relative">
           <label className="block text-sm font-medium mb-1">
             WhatsApp Number{" "}
-            <span
-              className="ml-1 text-gray-400 cursor-pointer"
-              title="Include country code. Example: +2348012345678"
-            >
+            <span className="ml-1 text-gray-400 cursor-pointer" title="Include country code. Example: +2348012345678">
               ℹ️
             </span>
-            <span className="text-xs text-gray-500 block">
-              (Include country code, e.g., +234)
-            </span>
+            <span className="text-xs text-gray-500 block">(Include country code, e.g., +234)</span>
           </label>
           <input
             type="tel"
@@ -217,13 +225,6 @@ export default function ApplicantForm() {
         {/* Job Type */}
         <div>
           <label className="block text-sm font-medium mb-1">Job Type</label>
-          <input
-            type="text"
-            placeholder="Search job type..."
-            value={typeSearchTerm}
-            onChange={(e) => setTypeSearchTerm(e.target.value)}
-            className="w-full mb-2 p-2 border rounded"
-          />
           <select
             name="jobType"
             value={form.jobType}
@@ -231,7 +232,7 @@ export default function ApplicantForm() {
             className="w-full p-2 border rounded"
             required
           >
-            {filteredTypeOptions.map((type) => (
+            {Object.keys(JOB_POSITIONS_BY_TYPE).sort().map((type) => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
@@ -241,27 +242,18 @@ export default function ApplicantForm() {
         <div>
           <label className="block text-sm font-medium mb-1">Job Position</label>
           {!showOtherJob ? (
-            <>
-              <input
-                type="text"
-                placeholder="Search job position..."
-                value={jobSearchTerm}
-                onChange={(e) => setJobSearchTerm(e.target.value)}
-                className="w-full mb-2 p-2 border rounded"
-              />
-              <select
-                name="jobPosition"
-                value={form.jobPosition}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              >
-                <option value="">Select a position</option>
-                {filteredJobOptions.map((position) => (
-                  <option key={position} value={position}>{position}</option>
-                ))}
-              </select>
-            </>
+            <select
+              name="jobPosition"
+              value={form.jobPosition}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Select a position</option>
+              {jobOptions.map((position) => (
+                <option key={position} value={position}>{position}</option>
+              ))}
+            </select>
           ) : (
             <input
               type="text"
