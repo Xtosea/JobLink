@@ -6,7 +6,7 @@ const API_BASE =
     ? "https://joblinkbackend.onrender.com"
     : "http://localhost:5000";
 
-// ✅ Job types (Nigeria-relevant)
+// Job Types
 const JOB_TYPES = [
   "Full-time",
   "Part-time",
@@ -18,23 +18,59 @@ const JOB_TYPES = [
   "Volunteer",
 ];
 
-// ✅ Job positions (Nigeria-relevant)
-const JOB_POSITIONS = [
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "Mobile App Developer",
-  "UI/UX Designer",
-  "Digital Marketer",
-  "Content Creator",
-  "Business Development Executive",
-  "Sales Executive",
-  "Customer Support Officer",
-  "Data Analyst",
-  "Project Coordinator",
-  "Volunteer Fundraiser",
-  "Optometrist",
-];
+// Job Positions mapped to Job Types
+const JOB_POSITIONS_BY_TYPE = {
+  "Full-time": [
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Mobile App Developer",
+    "UI/UX Designer",
+    "Business Development Executive",
+    "Sales Executive",
+    "Customer Support Officer",
+    "Project Coordinator",
+    "Digital Marketer",
+  ],
+  "Part-time": [
+    "Content Creator",
+    "Graphic Designer",
+    "Social Media Manager",
+    "Data Analyst",
+    "Volunteer Fundraiser",
+  ],
+  Contract: [
+    "IT Support Officer",
+    "Project Coordinator",
+    "Backend Developer",
+    "Frontend Developer",
+  ],
+  Remote: [
+    "Digital Marketer",
+    "Content Creator",
+    "UI/UX Designer",
+    "Frontend Developer",
+    "Backend Developer",
+  ],
+  Hybrid: [
+    "Business Development Executive",
+    "Regional Marketing Executive",
+    "Sales Account Executive",
+  ],
+  Internship: [
+    "Intern Frontend Developer",
+    "Intern Backend Developer",
+    "Marketing Intern",
+    "Content Intern",
+  ],
+  Freelance: [
+    "Graphic Designer",
+    "Content Writer",
+    "Video Editor",
+    "Social Media Manager",
+  ],
+  Volunteer: ["Volunteer Fundraiser", "Community Manager", "Field Officer"],
+};
 
 export default function ApplicantForm() {
   const [form, setForm] = useState({
@@ -49,7 +85,14 @@ export default function ApplicantForm() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Reset jobPosition if jobType changes
+    if (name === "jobType") {
+      setForm({ ...form, jobType: value, jobPosition: "" });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -80,6 +123,9 @@ export default function ApplicantForm() {
     }
   };
 
+  // Get positions for selected type, or empty array
+  const positions = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
+
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-6 text-center">Job Application Form</h2>
@@ -89,7 +135,6 @@ export default function ApplicantForm() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-
         {/* Full Name */}
         <div>
           <label className="block text-sm font-medium mb-1">Full Name</label>
@@ -147,7 +192,9 @@ export default function ApplicantForm() {
           >
             <option value="">Select job type</option>
             {JOB_TYPES.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
@@ -161,10 +208,15 @@ export default function ApplicantForm() {
             onChange={handleChange}
             className="w-full p-2 border rounded"
             required
+            disabled={!form.jobType} // disable if job type not selected
           >
-            <option value="">Select position</option>
-            {JOB_POSITIONS.map((pos) => (
-              <option key={pos} value={pos}>{pos}</option>
+            <option value="">
+              {form.jobType ? "Select position" : "Select job type first"}
+            </option>
+            {positions.map((pos) => (
+              <option key={pos} value={pos}>
+                {pos}
+              </option>
             ))}
           </select>
         </div>
