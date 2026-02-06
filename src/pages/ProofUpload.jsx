@@ -39,7 +39,7 @@ export default function ProofUpload() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Files uploaded successfully!");
-      navigate("/history");
+      navigate(`/history/${token}`);
     } catch (err) {
       console.error(err);
       alert("Upload failed. Please try again");
