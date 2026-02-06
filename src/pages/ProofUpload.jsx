@@ -9,9 +9,11 @@ export default function ProofUpload() {
   const [application, setApplication] = useState(null);
   const [proofFile, setProofFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const apiBase = process.env.REACT_APP_API_BASE;
 
+  // 🔹 Validate token & fetch application
   useEffect(() => {
     axios
       .get(`${apiBase}/api/applications/access/${token}`)
@@ -34,37 +36,39 @@ export default function ProofUpload() {
     formData.append("resumeFile", resumeFile);
 
     try {
+      setLoading(true);
+
       const res = await axios.patch(
-        `${apiBase}/api/applications/upload/${token}`,
+        `${apiBase}/api/applications/upload/cloud/${token}`, // ✅ FIXED
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       alert("Files uploaded successfully!");
-
-      // ✅ Redirect using PUBLIC token
       navigate(`/history/${res.data.publicToken}`);
     } catch (err) {
       console.error(err);
       alert("Upload failed. Please try again");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!application) return <p>Loading...</p>;
+  if (!application) return <p className="text-center mt-10">Loading...</p>;
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
 
       <p className="mb-3 text-gray-700">
-        Hello {application.fullname}, upload your{" "}
+        Hello <strong>{application.fullname}</strong>, please upload your{" "}
         <strong>Proof of Payment</strong> and <strong>Resume/CV</strong> for{" "}
         <strong>{application.jobPosition}</strong>.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label>Proof of Payment</label>
+          <label className="block font-medium">Proof of Payment</label>
           <input
             type="file"
             accept=".jpg,.jpeg,.png,.pdf"
@@ -74,7 +78,7 @@ export default function ProofUpload() {
         </div>
 
         <div>
-          <label>Resume/CV</label>
+          <label className="block font-medium">Resume / CV</label>
           <input
             type="file"
             accept=".pdf,.doc,.docx"
@@ -83,8 +87,11 @@ export default function ProofUpload() {
           />
         </div>
 
-        <button className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700">
-          Upload Files
+        <button
+          disabled={loading}
+          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
+        >
+          {loading ? "Uploading..." : "Upload Files"}
         </button>
       </form>
     </div>
