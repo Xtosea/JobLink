@@ -18,13 +18,11 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const apiBase =
-    process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
 
-  // ✅ Fetch applications
+  // Fetch applications
   useEffect(() => {
     if (!token) return navigate("/admin/login");
 
@@ -73,7 +71,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✅ Resend Email
   const handleResendEmail = async (id) => {
     try {
       await resendApplicationEmail(id, token);
@@ -84,14 +81,14 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✅ Filter + Pagination
+  // Filter + Pagination
   const filtered = applications.filter((app) => {
     const search = searchTerm.toLowerCase();
     const matchesSearch =
       app.fullname.toLowerCase().includes(search) ||
       app.email.toLowerCase().includes(search) ||
       app.jobType.toLowerCase().includes(search) ||
-      app.jobPosition.toLowerCase().includes(search);
+      app.jobPosition?.toLowerCase().includes(search);
     const status = app.status || "Pending";
     const matchesStatus = filterStatus === "All" || status === filterStatus;
     return matchesSearch && matchesStatus;
@@ -103,8 +100,8 @@ export default function AdminDashboard() {
     currentPage * pageSize
   );
 
-  // ✅ Generate PDF with proper file links
-  const generatePDF = (apps, filename) => {
+  // Generate PDF
+  const generatePDF = (appsToExport, filename) => {
     const doc = new jsPDF();
     const img = new Image();
     img.src = logoUrl;
@@ -112,6 +109,7 @@ export default function AdminDashboard() {
     img.onload = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
+
       const drawHeader = () => {
         doc.setFillColor(brandColor);
         doc.rect(0, 0, pageWidth, 30, "F");
@@ -124,12 +122,14 @@ export default function AdminDashboard() {
 
       drawHeader();
       let y = 40;
-      apps.forEach((app, i) => {
+
+      appsToExport.forEach((app, i) => {
         if (y > pageHeight - 40) {
           doc.addPage();
           drawHeader();
           y = 40;
         }
+
         doc.setFontSize(12);
         doc.text(`Application #${i + 1}`, 10, y);
         y += 6;
@@ -143,15 +143,17 @@ export default function AdminDashboard() {
         y += 6;
         doc.text(`Reply: ${app.reply || "-"}`, 10, y);
         y += 6;
+
         if (app.proofFile) {
-          doc.text(`Proof: ${apiBase}${app.proofFile}`, 10, y);
+          doc.text(`Proof: ${app.proofFile}`, 10, y);
           y += 6;
         }
         if (app.resumeFile) {
-          doc.text(`Resume: ${apiBase}${app.resumeFile}`, 10, y);
+          doc.text(`Resume: ${app.resumeFile}`, 10, y);
           y += 6;
         }
       });
+
       doc.save(filename);
     };
   };
@@ -236,7 +238,7 @@ export default function AdminDashboard() {
                     <div className="mt-2 space-y-1">
                       {app.proofFile ? (
                         <a
-                          href={`${apiBase}${app.proofFile}`}
+                          href={app.proofFile}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block text-sm text-blue-600 underline"
@@ -251,7 +253,7 @@ export default function AdminDashboard() {
 
                       {app.resumeFile ? (
                         <a
-                          href={`${apiBase}${app.resumeFile}`}
+                          href={app.resumeFile}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block text-sm text-green-600 underline"
