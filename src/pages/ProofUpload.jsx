@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function ProofUpload() {
-  const { token } = useParams();
+  const { token: rawToken } = useParams();
+
+// handle email tracking links
+const token = rawToken.split("/").pop();
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
