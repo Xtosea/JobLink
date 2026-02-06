@@ -17,12 +17,11 @@ export default function ReplyPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const apiBase = process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
 
-  // 🔐 Protect page
+  // Protect page
   useEffect(() => {
     if (!token) {
       navigate("/admin/login");
@@ -71,14 +70,14 @@ export default function ReplyPage() {
     }
   };
 
-  // ✅ Pagination
+  // Pagination
   const totalPages = Math.ceil(apps.length / pageSize);
   const paginated = apps.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
-  // ✅ Generate PDF
+  // Generate PDF
   const generatePDF = (appsToExport, filename) => {
     const doc = new jsPDF();
     const img = new Image();
@@ -121,17 +120,9 @@ export default function ReplyPage() {
         y += 6;
         doc.text(`Reply: ${app.reply || "-"}`, 10, y);
         y += 6;
-        doc.text(
-          `Resume: ${app.resumeFile ? apiBase + app.resumeFile : "None"}`,
-          10,
-          y
-        );
+        doc.text(`Resume: ${app.resumeFile || "None"}`, 10, y);
         y += 6;
-        doc.text(
-          `Proof: ${app.proofFile ? apiBase + app.proofFile : "None"}`,
-          10,
-          y
-        );
+        doc.text(`Proof: ${app.proofFile || "None"}`, 10, y);
         y += 8;
       });
 
@@ -148,9 +139,7 @@ export default function ReplyPage() {
     <div className="max-w-4xl mx-auto grid gap-4">
       <h2 className="text-xl font-bold">Applications / Admin Reply</h2>
 
-      {apps.length === 0 && (
-        <p className="text-gray-500">No applications found.</p>
-      )}
+      {apps.length === 0 && <p className="text-gray-500">No applications found.</p>}
 
       {/* PDF buttons */}
       <div className="flex gap-2 mb-4">
@@ -161,114 +150,3 @@ export default function ReplyPage() {
           Download Current Page PDF
         </button>
         <button
-          onClick={downloadAll}
-          className="px-4 py-2 bg-indigo-600 text-white rounded"
-        >
-          Download All Applications PDF
-        </button>
-      </div>
-
-      {paginated.map((app) => (
-        <div key={app._id} className="p-4 bg-white rounded shadow">
-          <div className="flex justify-between gap-4">
-            <div>
-              <div className="font-semibold">
-                {app.fullname} — {app.jobPosition} ({app.jobType})
-              </div>
-              <div className="text-sm">
-                {app.email} | {app.mobile}
-              </div>
-              <div className="text-xs text-gray-500">
-                Submitted: {new Date(app.createdAt).toLocaleString()}
-              </div>
-            </div>
-
-            <div className="text-sm">
-              {app.resumeFile ? (
-                <a
-                  href={`${apiBase}${app.resumeFile}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  View CV
-                </a>
-              ) : (
-                <span className="text-gray-400 italic">No CV</span>
-              )}
-              <br />
-              {app.proofFile ? (
-                <a
-                  href={`${apiBase}${app.proofFile}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-600 underline"
-                >
-                  View Proof
-                </a>
-              ) : (
-                <span className="text-gray-400 italic">No Proof</span>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <textarea
-              placeholder="Write reply to applicant"
-              value={selectedReply[app._id] ?? app.reply ?? ""}
-              onChange={(e) =>
-                handleReplyChange(app._id, e.target.value)
-              }
-              className="w-full p-2 border rounded h-24"
-            />
-
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={() => sendReply(app._id)}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
-                Save Reply
-              </button>
-
-              <button
-                onClick={() => resendEmail(app._id)}
-                className="px-4 py-2 bg-green-600 text-white rounded"
-              >
-                Resend Email
-              </button>
-            </div>
-
-            {app.reply && (
-              <div className="mt-2 p-2 bg-gray-100 text-sm">
-                <strong>Current reply:</strong> {app.reply}
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-4 gap-2">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 bg-gray-200 rounded"
-          >
-            Prev
-          </button>
-          <span className="px-3 py-1 font-semibold">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 bg-gray-200 rounded"
-          >
-            Next
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
