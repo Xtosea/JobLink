@@ -18,7 +18,8 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const apiBase = process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
+  const apiBase =
+    process.env.REACT_APP_API_BASE || "https://joblinknigeria.vercel.app";
   const appName = process.env.REACT_APP_NAME || "JobLink Admin Dashboard";
   const logoUrl = process.env.REACT_APP_LOGO_URL || "/logo192.png";
   const brandColor = "#22c55e";
@@ -102,7 +103,7 @@ export default function AdminDashboard() {
     currentPage * pageSize
   );
 
-  // ✅ Generate PDF
+  // ✅ Generate PDF with proper file links
   const generatePDF = (apps, filename) => {
     const doc = new jsPDF();
     const img = new Image();
@@ -124,7 +125,7 @@ export default function AdminDashboard() {
       drawHeader();
       let y = 40;
       apps.forEach((app, i) => {
-        if (y > pageHeight - 30) {
+        if (y > pageHeight - 40) {
           doc.addPage();
           drawHeader();
           y = 40;
@@ -142,6 +143,14 @@ export default function AdminDashboard() {
         y += 6;
         doc.text(`Reply: ${app.reply || "-"}`, 10, y);
         y += 6;
+        if (app.proofFile) {
+          doc.text(`Proof: ${apiBase}${app.proofFile}`, 10, y);
+          y += 6;
+        }
+        if (app.resumeFile) {
+          doc.text(`Resume: ${apiBase}${app.resumeFile}`, 10, y);
+          y += 6;
+        }
       });
       doc.save(filename);
     };
@@ -217,7 +226,6 @@ export default function AdminDashboard() {
           <tbody>
             {paginated.map((app) => (
               <tr key={app._id} className="border-b hover:bg-gray-50">
-                {/* Applicant Info */}
                 <td className="px-4 py-3">
                   <div>
                     <p className="font-semibold">{app.fullname}</p>
@@ -228,7 +236,7 @@ export default function AdminDashboard() {
                     <div className="mt-2 space-y-1">
                       {app.proofFile ? (
                         <a
-                          href={app.proofFile}
+                          href={`${apiBase}${app.proofFile}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block text-sm text-blue-600 underline"
@@ -243,7 +251,7 @@ export default function AdminDashboard() {
 
                       {app.resumeFile ? (
                         <a
-                          href={app.resumeFile}
+                          href={`${apiBase}${app.resumeFile}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block text-sm text-green-600 underline"
@@ -257,10 +265,8 @@ export default function AdminDashboard() {
                   </div>
                 </td>
 
-                {/* Job Info */}
                 <td className="px-4 py-3">{app.jobType}</td>
 
-                {/* Reply Section */}
                 <td className="px-4 py-3">
                   <textarea
                     placeholder="Write reply..."
@@ -270,7 +276,6 @@ export default function AdminDashboard() {
                   />
                 </td>
 
-                {/* Status */}
                 <td className="px-4 py-3">
                   <select
                     value={app.status || "Pending"}
@@ -292,7 +297,6 @@ export default function AdminDashboard() {
                   </select>
                 </td>
 
-                {/* Actions */}
                 <td className="px-4 py-3 text-center space-x-1">
                   <button
                     onClick={() => handleReply(app._id)}
