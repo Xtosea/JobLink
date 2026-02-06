@@ -4,6 +4,7 @@ const API_BASE = process.env.REACT_APP_API_BASE || "https://joblinknigeria.onren
 
 // ================== Admin Login ==================
 export const adminLogin = (data) => {
+  // ✅ No withCredentials
   return axios.post(`${API_BASE}/api/admin/login`, data, {
     headers: { "Content-Type": "application/json" },
   });
