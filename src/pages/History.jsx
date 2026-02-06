@@ -1,28 +1,52 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
-export default function History({ token }) {
-  const [apps, setApps] = useState([]);
+export default function HistoryPage() {
+  const { token } = useParams(); // publicToken
+  const [application, setApplication] = useState(null);
+
+  const apiBase = process.env.REACT_APP_API_BASE;
 
   useEffect(() => {
-    if (!token) return;
-    axios.get(`${process.env.REACT_APP_API_BASE}/api/applications/access/${token}`)
-      .then(res => setApps([res.data])) // single application per token
-      .catch(console.error);
-  }, [token]);
+    axios
+      .get(`${apiBase}/api/applications/history/${token}`)
+      .then((res) => setApplication(res.data))
+      .catch(() => alert("Invalid history link"));
+  }, [token, apiBase]);
+
+  if (!application) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Your Applications</h2>
-      {apps.map(app => (
-        <div key={app._id} className="p-3 bg-white rounded shadow mb-3">
-          <div><strong>{app.fullname}</strong> - {app.jobPosition} ({app.jobType})</div>
-          <div>Status: {app.status}</div>
-          <div>Reply: {app.reply || "No reply yet"}</div>
-          {app.proofFile && <a href={app.proofFile} target="_blank" rel="noreferrer">View Proof</a>}
-          {app.resumeFile && <a href={app.resumeFile} target="_blank" rel="noreferrer">View CV</a>}
-        </div>
-      ))}
+    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
+      <h2 className="text-xl font-bold mb-3">Application Status</h2>
+
+      <p><strong>Name:</strong> {application.fullname}</p>
+      <p><strong>Job:</strong> {application.jobPosition}</p>
+      <p><strong>Status:</strong> {application.status}</p>
+      <p><strong>Reply:</strong> {application.reply || "No reply yet"}</p>
+
+      {application.proofFile && (
+        <a
+          href={`${apiBase}${application.proofFile}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block text-blue-600 underline mt-2"
+        >
+          View Proof of Payment
+        </a>
+      )}
+
+      {application.resumeFile && (
+        <a
+          href={`${apiBase}${application.resumeFile}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block text-blue-600 underline mt-2"
+        >
+          View Resume / CV
+        </a>
+      )}
     </div>
   );
 }
