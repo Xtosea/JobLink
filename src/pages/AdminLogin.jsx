@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { adminLogin } from "../api/api"; // named import
+import { adminLogin } from "../api/api";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,8 @@ export default function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await adminLogin({ email, password }); // ✅ correct call
+      const res = await adminLogin({ email, password });
+      // Store JWT in Context / LocalStorage
       login(res.data.token);
       navigate("/admin");
     } catch (err) {
