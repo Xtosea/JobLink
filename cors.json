@@ -1,7 +1,7 @@
 [
   {
     "origin": [
-      "https://joblinknigeria.vercel.app",
+      "FRONTEND_URL=https://joblinks.globelynks.com",
       "http://localhost:3000"
     ],
     "method": ["GET", "POST", "PUT", "PATCH", "DELETE"],
