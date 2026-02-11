@@ -40,10 +40,13 @@ const token = rawToken.split("/").pop();
     try {
       setLoading(true);
 
-      const res = await axios.patch(
-        `${apiBase}/api/applications/upload/cloud/${token}`,
-        formData
-      );
+      const res = await axios.post(
+  `${apiBase}/api/applications/upload/cloud/${token}`,
+  formData,
+  {
+    headers: { "Content-Type": "multipart/form-data" },
+  }
+);
 
       alert("Files uploaded successfully!");
       navigate(`/history/${res.data.publicToken}`);
