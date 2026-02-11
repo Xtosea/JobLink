@@ -94,6 +94,10 @@ const token = rawToken.split("/").pop();
         >
           {loading ? "Uploading..." : "Upload Files"}
         </button>
+<label>
+  <input type="checkbox" required /> I agree to the{" "}
+  <a href="/terms">Terms & Conditions</a>
+</label>
       </form>
     </div>
   );
