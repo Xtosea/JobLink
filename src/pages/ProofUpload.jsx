@@ -4,9 +4,7 @@ import axios from "axios";
 
 export default function ProofUpload() {
   const { token: rawToken } = useParams();
-
-// handle email tracking links
-const token = rawToken.split("/").pop();
+  const token = rawToken.split("/").pop();
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
@@ -26,6 +24,30 @@ const token = rawToken.split("/").pop();
       });
   }, [token, apiBase, navigate]);
 
+  // ✅ FRONTEND → CLOUDINARY
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
+    );
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/auto/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+    if (!data.secure_url) throw new Error("Cloud upload failed");
+
+    return data.secure_url;
+  };
+
+  // ✅ REPLACE YOUR handleSubmit WITH THIS
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,20 +55,18 @@ const token = rawToken.split("/").pop();
       return alert("Please select both files");
     }
 
-    const formData = new FormData();
-    formData.append("proofFile", proofFile);
-    formData.append("resumeFile", resumeFile);
-
     try {
       setLoading(true);
 
+      // 1️⃣ Upload files to Cloudinary
+      const proofUrl = await uploadToCloudinary(proofFile);
+      const resumeUrl = await uploadToCloudinary(resumeFile);
+
+      // 2️⃣ Save URLs in backend
       const res = await axios.post(
-  `${apiBase}/api/applications/upload/cloud/${token}`,
-  formData,
-  {
-    headers: { "Content-Type": "multipart/form-data" },
-  }
-);
+        `${apiBase}/api/applications/upload/cloud/${token}`,
+        { proofUrl, resumeUrl }
+      );
 
       alert("Files uploaded successfully!");
       navigate(`/history/${res.data.publicToken}`);
@@ -97,10 +117,11 @@ const token = rawToken.split("/").pop();
         >
           {loading ? "Uploading..." : "Upload Files"}
         </button>
-<label>
-  <input type="checkbox" required /> I agree to the{" "}
-  <a href="/terms">Terms & Conditions</a>
-</label>
+
+        <label>
+          <input type="checkbox" required /> I agree to the{" "}
+          <a href="/terms">Terms & Conditions</a>
+        </label>
       </form>
     </div>
   );
