@@ -11,6 +11,8 @@ import HistoryPage from "./pages/History";
 import ReplyPage from "./pages/ReplyPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import About from "./pages/About";
+import Terms from "./pages/Terms";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -73,6 +75,11 @@ export default function App() {
             path="/"
             element={<ApplicantForm setApplicationToken={setApplicationToken} />}
           />
+  
+        <Route path="/about" 
+        element={<About />} />
+        <Route path="/terms"
+        element={<Terms />} />
         </Routes>
       </div>
     </Router>
