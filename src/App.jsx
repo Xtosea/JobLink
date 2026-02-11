@@ -34,16 +34,7 @@ export default function App() {
             </Link>
           )}
 
-          {/* Admin */}
-          <Link to="/reply" className="underline">
-            Admin Reply
-          </Link>
-          <Link to="/admin/login" className="underline">
-            Admin Login
-          </Link>
-          <Link to="/admin" className="underline">
-            Dashboard
-          </Link>
+          
 
                 {/* About */}
           <Link to="/about" className="underline">
