@@ -91,38 +91,55 @@ export default function ProofUpload() {
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Proof of Payment</label>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) => setProofFile(e.target.files[0])}
-            required
-          />
-        </div>
+  <div>
+    <label className="block font-medium mb-1">Proof of Payment</label>
+    <input
+      type="file"
+      accept=".jpg,.jpeg,.png,.pdf"
+      onChange={(e) => setProofFile(e.target.files[0])}
+      required
+    />
+  </div>
 
-        <div>
-          <label className="block font-medium mb-1">Resume / CV</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setResumeFile(e.target.files[0])}
-            required
-          />
-        </div>
+  <div>
+    <label className="block font-medium mb-1">Resume / CV</label>
+    <input
+      type="file"
+      accept=".pdf,.doc,.docx"
+      onChange={(e) => setResumeFile(e.target.files[0])}
+      required
+    />
+  </div>
 
-        <button
-          disabled={loading}
-          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
-        >
-          {loading ? "Uploading..." : "Upload Files"}
-        </button>
+  {/* ✅ PROGRESS BAR */}
+  {loading && (
+    <>
+      <div className="w-full bg-gray-200 rounded h-3 overflow-hidden">
+        <div
+          className="h-3 bg-green-600 transition-all duration-300"
+          style={{ width: `${uploadProgress}%` }}
+        />
+      </div>
+      <p className="text-sm text-center mt-1">
+        Uploading... {uploadProgress}%
+      </p>
+    </>
+  )}
 
-        <label>
-          <input type="checkbox" required /> I agree to the{" "}
-          <a href="/terms">Terms & Conditions</a>
-        </label>
-      </form>
+  <button
+    disabled={loading}
+    className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
+  >
+    {loading ? "Uploading..." : "Upload Files"}
+  </button>
+
+  <label className="text-sm">
+    <input type="checkbox" required /> I agree to the{" "}
+    <a href="/terms" className="text-green-600 underline">
+      Terms & Conditions
+    </a>
+  </label>
+</form>
     </div>
   );
 }
