@@ -26,41 +26,70 @@ export default function ProofUpload() {
       });
   }, [token, apiBase, navigate]);
 
-  // Upload file to Cloudinary with progress
-  const uploadToCloudinary = (file, onProgress) => {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const formData = new FormData();
+  // ================= UPLOAD TO CLOUDINARY =================
+const uploadToCloudinary = (file, onProgress) => {
+  return new Promise((resolve, reject) => {
+    if (!file) return reject(new Error("No file provided"));
 
-      formData.append("file", file);
-      formData.append(
-        "upload_preset",
-        process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
-      );
+    console.log("Uploading file:", file.name, file.type, file.size);
 
-      xhr.open(
-        "POST",
-        `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/auto/upload`
-      );
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable && onProgress) {
-          const percent = Math.round((event.loaded * 100) / event.total);
-          onProgress(percent);
-        }
-      };
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
+    );
 
-      xhr.onload = () => {
-        const response = JSON.parse(xhr.responseText);
-        if (response.secure_url) resolve(response.secure_url);
-        else reject(new Error("Cloud upload failed"));
-      };
+    const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+    console.log("Using Cloudinary Cloud Name:", cloudName);
 
-      xhr.onerror = () => reject(new Error("Upload error"));
+    xhr.open(
+      "POST",
+      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`
+    );
 
-      xhr.send(formData);
-    });
-  };
+    // Track progress
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        const percent = Math.round((event.loaded * 100) / event.total);
+        onProgress(percent);
+      }
+    };
+
+    // On load
+    xhr.onload = () => {
+      let response;
+      try {
+        response = JSON.parse(xhr.responseText);
+      } catch (err) {
+        console.error("Failed to parse Cloudinary response:", xhr.responseText);
+        return reject(new Error("Invalid response from Cloudinary"));
+      }
+
+      if (xhr.status !== 200) {
+        console.error("Cloudinary error response:", response);
+        return reject(new Error(response.error?.message || "Upload failed"));
+      }
+
+      if (!response.secure_url) {
+        console.error("No secure_url returned from Cloudinary:", response);
+        return reject(new Error("Cloud upload failed"));
+      }
+
+      console.log("Uploaded successfully:", response.secure_url);
+      resolve(response.secure_url);
+    };
+
+    xhr.onerror = () => {
+      console.error("XHR error during upload");
+      reject(new Error("Network error during upload"));
+    };
+
+    xhr.send(formData);
+  });
+};
 
   // Handle form submit
   const handleSubmit = async (e) => {
