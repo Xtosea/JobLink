@@ -44,6 +44,16 @@ export default function App() {
           <Link to="/admin" className="underline">
             Dashboard
           </Link>
+
+                {/* About */}
+          <Link to="/about" className="underline">
+            About Us
+          </Link>
+
+                {/* Terms */}
+          <Link to="/terms" className="underline">
+            Terms And Conditions 
+          </Link>
         </nav>
 
         {/* ================= ROUTES ================= */}
