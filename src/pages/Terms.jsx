@@ -23,7 +23,7 @@ export default function Terms() {
 
       <h2>3. Payment</h2>
       <p>
-        A non-refundable service fee of <strong>₦1,000</strong> is required.
+        A non-refundable service fee of <strong>₦10,000</strong> is required.
         Services begin only after payment confirmation and proof submission.
       </p>
 
