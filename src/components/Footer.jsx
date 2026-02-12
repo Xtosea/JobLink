@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 mt-12">
+      {/* Top section */}
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-3">
 
         {/* Brand */}
@@ -35,9 +36,15 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-       </div>
-        
-      
+
+        {/* Optional third column (you can remove if not needed) */}
+        <div>
+          <h4 className="text-white font-semibold mb-3">Contact</h4>
+          <p className="text-sm">support@joblink.com</p>
+        </div>
+
+      </div>
+
       {/* Bottom bar */}
       <div className="border-t border-gray-700 text-center py-4 text-sm">
         © {new Date().getFullYear()} Powered by Board Givers Multi Purpose Limited. All rights reserved.
