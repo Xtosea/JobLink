@@ -1,4 +1,4 @@
-// App.js
+l// App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
@@ -22,34 +22,31 @@ export default function App() {
       <div className="min-h-screen bg-gray-50 p-6">
 
         {/* ================= NAVIGATION ================= */}
-        <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
-          {/* Applicant */}
-          <Link to="/apply" className="underline">
-            Apply
-          </Link>
+      <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
+  <Link to="/apply" className="underline">
+    Apply
+  </Link>
 
-          {applicationToken && (
-            <Link to={`/upload/${applicationToken}`} className="underline">
-              Upload Proof
-            </Link>
-          )}
+  {applicationToken && (
+    <>
+      <Link to={`/upload/${applicationToken}`} className="underline">
+        Upload Proof
+      </Link>
 
-          
+      <Link to={`/history/${applicationToken}`} className="underline">
+        History
+      </Link>
+    </>
+  )}
 
-                {/* About */}
-          <Link to="/about" className="underline">
-            About Us
-          </Link>
+  <Link to="/about" className="underline">
+    About Us
+  </Link>
 
-                {/* Terms */}
-          <Link to="/terms" className="underline">
-            Terms And Conditions 
-          </Link>
-           <Link to={`/history/$.         {applicationToken}`} 
-           className="underline">
-  History
-</Link>
-        </nav>
+  <Link to="/terms" className="underline">
+    Terms And Conditions
+  </Link>
+</nav>
 
         {/* ================= ROUTES ================= */}
         <Routes>
