@@ -45,10 +45,10 @@ export default function App() {
           <Link to="/terms" className="underline">
             Terms And Conditions 
           </Link>
-                 {/* History*/}
-          <Link to="/historypage" className="underline">
-            History 
-          </Link>
+           <Link to={`/history/$.         {applicationToken}`} 
+           className="underline">
+  History
+</Link>
         </nav>
 
         {/* ================= ROUTES ================= */}
