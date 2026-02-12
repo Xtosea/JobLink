@@ -77,6 +77,7 @@ export default function Footer() {
     </li>
   </ul>
 </div>
+</div>
       {/* Bottom bar */}
       <div className="border-t border-gray-700 text-center py-4 text-sm">
         © {new Date().getFullYear()} Powered by Board Givers Multi Purpose Limited. All rights reserved.
