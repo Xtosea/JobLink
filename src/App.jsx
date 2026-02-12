@@ -46,7 +46,7 @@ export default function App() {
             Terms And Conditions 
           </Link>
                  {/* History*/}
-          <Link to="/history" className="underline">
+          <Link to="/historypage" className="underline">
             History 
           </Link>
         </nav>
