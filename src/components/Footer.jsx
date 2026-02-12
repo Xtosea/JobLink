@@ -40,7 +40,14 @@ export default function Footer() {
         {/* Optional third column (you can remove if not needed) */}
         <div>
           <h4 className="text-white font-semibold mb-3">Contact</h4>
-          <p className="text-sm">joblinkhelpdesk@gmail.com</p>
+          <p className="text-sm">
+  <a
+    href="mailto:joblinkhelpdesk@gmail.com"
+    className="hover:text-white underline"
+  >
+    joblinkhelpdesk@gmail.com
+  </a>
+</p>
         </div>
 
       </div>
