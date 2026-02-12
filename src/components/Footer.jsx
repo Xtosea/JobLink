@@ -37,16 +37,10 @@ export default function Footer() {
         </div>
 
         
-        <div>
-          <h4 className="text-white font-semibold mb-3">Contact</h4>
-          <p className="text-sm">Email: support@joblink.com</p>
-          <p className="text-sm">Location: Nigeria</p>
-        </div>
-      </div>
-
+      
       {/* Bottom bar */}
       <div className="border-t border-gray-700 text-center py-4 text-sm">
-        © {new Date().getFullYear()} JobLink. All rights reserved.
+        © {new Date().getFullYear()} Powered by Board Givers Multi Purpose Limited. All rights reserved.
       </div>
     </footer>
   );
