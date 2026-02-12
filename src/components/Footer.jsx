@@ -36,7 +36,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Contact */}
+        
         <div>
           <h4 className="text-white font-semibold mb-3">Contact</h4>
           <p className="text-sm">Email: support@joblink.com</p>
