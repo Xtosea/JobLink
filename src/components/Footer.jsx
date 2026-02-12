@@ -40,7 +40,7 @@ export default function Footer() {
         {/* Optional third column (you can remove if not needed) */}
         <div>
           <h4 className="text-white font-semibold mb-3">Contact</h4>
-          <p className="text-sm">support@joblink.com</p>
+          <p className="text-sm">joblinkhelpdesk@gmail.com</p>
         </div>
 
       </div>
