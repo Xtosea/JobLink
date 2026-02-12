@@ -13,6 +13,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
+import Footer from "./components/Footer";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -85,5 +86,11 @@ export default function App() {
         </Routes>
       </div>
     </Router>
+
+    <>
+      {/* your routes / pages */}
+      <Footer />
+    </>
+
   );
 }
