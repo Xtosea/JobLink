@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function History() {
-  const { token } = useParams(); // publicToken
+  const { token } = useParams();
   const [application, setApplication] = useState(null);
 
   const apiBase = process.env.REACT_APP_API_BASE;
