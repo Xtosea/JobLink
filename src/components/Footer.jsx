@@ -37,21 +37,46 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Optional third column (you can remove if not needed) */}
-        <div>
-          <h4 className="text-white font-semibold mb-3">Contact</h4>
-          <p className="text-sm">
-  <a
-    href="mailto:joblinkhelpdesk@gmail.com"
-    className="hover:text-white underline"
-  >
-    joblinkhelpdesk@gmail.com
-  </a>
-</p>
-        </div>
+        {/* Contact */}
+<div>
+  <h4 className="text-white font-semibold mb-3">Contact</h4>
 
-      </div>
+  <ul className="space-y-2 text-sm">
+    {/* Email */}
+    <li>
+      <a
+        href="mailto:joblinkhelpdesk@gmail.com"
+        className="hover:text-white underline"
+      >
+        📧 joblinkhelpdesk@gmail.com
+      </a>
+    </li>
 
+    {/* WhatsApp */}
+    <li>
+      <a
+        href="https://wa.me/234XXXXXXXXXX"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-white underline"
+      >
+        💬 WhatsApp
+      </a>
+    </li>
+
+    {/* Telegram */}
+    <li>
+      <a
+        href="https://t.me/YourTelegramUsername"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-white underline"
+      >
+        ✈️ Telegram
+      </a>
+    </li>
+  </ul>
+</div>
       {/* Bottom bar */}
       <div className="border-t border-gray-700 text-center py-4 text-sm">
         © {new Date().getFullYear()} Powered by Board Givers Multi Purpose Limited. All rights reserved.
