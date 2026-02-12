@@ -20,77 +20,60 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-6 flex flex-col">
 
         {/* ================= NAVIGATION ================= */}
-      <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
-  <Link to="/apply" className="underline">
-    Apply
-  </Link>
+        <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
+          <Link to="/apply" className="underline">Apply</Link>
 
-  {applicationToken && (
-    <>
-      <Link to={`/upload/${applicationToken}`} className="underline">
-        Upload Proof
-      </Link>
+          {applicationToken && (
+            <>
+              <Link to={`/upload/${applicationToken}`} className="underline">
+                Upload Proof
+              </Link>
 
-      <Link to={`/history/${applicationToken}`} className="underline">
-        History
-      </Link>
-    </>
-  )}
+              <Link to={`/history/${applicationToken}`} className="underline">
+                History
+              </Link>
+            </>
+          )}
 
-  <Link to="/about" className="underline">
-    About Us
-  </Link>
-
-  <Link to="/terms" className="underline">
-    Terms And Conditions
-  </Link>
-</nav>
+          <Link to="/about" className="underline">About Us</Link>
+          <Link to="/terms" className="underline">Terms And Conditions</Link>
+        </nav>
 
         {/* ================= ROUTES ================= */}
-        <Routes>
-          {/* Applicant Routes */}
-          <Route
-            path="/apply"
-            element={<ApplicantForm setApplicationToken={setApplicationToken} />}
-          />
+        <div className="flex-grow">
+          <Routes>
+            {/* Applicant Routes */}
+            <Route
+              path="/apply"
+              element={<ApplicantForm setApplicationToken={setApplicationToken} />}
+            />
 
-          {/* ✅ THIS IS THE IMPORTANT ROUTE */}
-          <Route
-            path="/upload/:token"
-            element={<ProofUpload />}
-          />
+            <Route path="/upload/:token" element={<ProofUpload />} />
+            <Route path="/history/:token" element={<HistoryPage />} />
 
-          <Route
-            path="/history/:token"
-            element={<HistoryPage />}
-          />
+            {/* Admin Routes */}
+            <Route path="/reply" element={<ReplyPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
 
-          {/* Admin Routes */}
-          <Route path="/reply" element={<ReplyPage />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+            {/* Static Pages */}
+            <Route path="/about" element={<About />} />
+            <Route path="/terms" element={<Terms />} />
 
-          {/* Default */}
-          <Route
-            path="/"
-            element={<ApplicantForm setApplicationToken={setApplicationToken} />}
-          />
-  
-        <Route path="/about" 
-        element={<About />} />
-        <Route path="/terms"
-        element={<Terms />} />
-        </Routes>
+            {/* Default */}
+            <Route
+              path="/"
+              element={<ApplicantForm setApplicationToken={setApplicationToken} />}
+            />
+          </Routes>
+        </div>
+
+        {/* ================= FOOTER ================= */}
+        <Footer />
       </div>
     </Router>
-
-    <>
-      {/* your routes / pages */}
-      <Footer />
-    </>
-
   );
 }
