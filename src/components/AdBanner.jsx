@@ -1,9 +1,7 @@
-"use client";
 import { useEffect } from "react";
 
-export default function AdBanner() {
+export default function AdBanner({ position }) {
   useEffect(() => {
-    // Prevent loading script multiple times
     if (document.getElementById("effectivegate-script")) return;
 
     const script = document.createElement("script");
@@ -14,16 +12,18 @@ export default function AdBanner() {
     script.setAttribute("data-cfasync", "false");
 
     document.body.appendChild(script);
-
-    return () => {
-      // Optional cleanup (usually not required for ads)
-    };
   }, []);
 
   return (
     <div
-      id="container-872356e7bdfe5cfb68809141542a5ee2"
-      style={{ margin: "20px 0", textAlign: "center" }}
-    ></div>
+      id={`container-872356e7bdfe5cfb68809141542a5ee2-${position}`}
+      style={{
+        margin: "20px 0",
+        textAlign: "center",
+        width: "100%",
+      }}
+    >
+      <div id="container-872356e7bdfe5cfb68809141542a5ee2"></div>
+    </div>
   );
 }
