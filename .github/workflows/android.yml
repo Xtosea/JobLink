@@ -1,6 +1,5 @@
-name: Build Android APK
+name: Build Android Release APK
 
-# Trigger on push to main branch
 on:
   push:
     branches:
@@ -11,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup NodeJS (make sure it's >= 22 for Capacitor 8)
+      # 2️⃣ Setup NodeJS >=22
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -31,26 +30,26 @@ jobs:
         working-directory: ./job-link-frontend
         run: npm run build
 
-      # 5️⃣ Setup Java for Gradle
+      # 5️⃣ Setup Java
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      # 6️⃣ Sync Capacitor (we already have android/ folder committed)
+      # 6️⃣ Sync Capacitor
       - name: Sync Capacitor
         working-directory: ./job-link-frontend
         run: npx cap sync android
 
-      # 7️⃣ Build APK
-      - name: Build APK
+      # 7️⃣ Build release APK
+      - name: Build Release APK
         working-directory: ./job-link-frontend/android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
-      # 8️⃣ Upload APK as artifact
-      - name: Upload APK
+      # 8️⃣ Upload release APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: ./job-link-frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-release
+          path: ./job-link-frontend/android/app/build/outputs/apk/release/app-release.apk
