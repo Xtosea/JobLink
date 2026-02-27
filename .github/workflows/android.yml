@@ -32,12 +32,12 @@ jobs:
 
       # 5️⃣ Setup Java
       - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      # 6️⃣ Sync Capacitor with Android platform
+  uses: actions/setup-java@v4
+  with:
+    distribution: 'temurin'
+    java-version: '21'
+     
+ # 6️⃣ Sync Capacitor with Android platform
       - name: Sync Capacitor
         run: npx cap sync android
         working-directory: ./  # root of JobLink repo
