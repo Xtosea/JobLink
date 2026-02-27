@@ -1,7 +1,10 @@
 {
-  "name": "joblink-frontend",
+  "name": "joblink",
   "version": "1.0.0",
   "private": true,
+  "homepage": "./",
+  "description": "JobLink React + Capacitor app",
+  "main": "index.js",
   "dependencies": {
     "@capacitor/android": "^8.1.0",
     "@capacitor/cli": "^8.1.0",
@@ -38,18 +41,11 @@
       "last 1 safari version"
     ]
   },
-  "description": "",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Xtosea/JobLink.git"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-
-  "bugs": {
-    "url": "https://github.com/Xtosea/JobLink/issues"
-  },
-  "homepage": "https://github.com/Xtosea/JobLink#readme"
+  "license": "ISC"
 }
