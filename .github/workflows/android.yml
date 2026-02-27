@@ -12,40 +12,38 @@ jobs:
     steps:
       # 1️⃣ Checkout repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2️⃣ Setup NodeJS (>=22 required by Capacitor CLI)
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: ./  # root of JobLink repo
 
       # 4️⃣ Build React app
       - name: Build React App
         run: npm run build
-        working-directory: ./  # root of JobLink repo
 
-      # 5️⃣ Setup Java
+      # 5️⃣ Setup Java 21 (Required for Capacitor 8)
       - name: Setup Java
-  uses: actions/setup-java@v4
-  with:
-    distribution: 'temurin'
-    java-version: '21'
-     
- # 6️⃣ Sync Capacitor with Android platform
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # 6️⃣ Sync Capacitor with Android platform
       - name: Sync Capacitor
         run: npx cap sync android
-        working-directory: ./  # root of JobLink repo
 
-      # 7️⃣ Build the APK
+      # 7️⃣ Build the Release APK
       - name: Build Release APK
-        run: ./gradlew assembleRelease
-        working-directory: ./android
+        run: |
+          cd android
+          ./gradlew assembleRelease
 
       # 8️⃣ Upload APK as artifact
       - name: Upload APK
