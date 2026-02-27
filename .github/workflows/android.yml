@@ -39,17 +39,24 @@ jobs:
       - name: Install Capacitor Android
         run: npm install @capacitor/android
 
-      # 7️⃣ Sync Capacitor
+      # 7️⃣ Add Android platform if missing
+      - name: Add Android Platform
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+
+      # 8️⃣ Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 8️⃣ Build APK
+      # 9️⃣ Build APK
       - name: Build APK
         run: |
           cd android
           ./gradlew assembleDebug
 
-      # 9️⃣ Upload APK as artifact
+      # 🔟 Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
