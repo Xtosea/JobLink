@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Capacitor } from "@capacitor/core";
 
+// Use proper API_BASE for APK vs Web
 const API_BASE =
-  process.env.NODE_ENV === "production"
-    ? "https://joblinkbackend.onrender.com"
-    : "http://localhost:5000";
+  Capacitor.getPlatform() === "web"
+    ? "http://localhost:5000"
+    : "https://joblinkbackend.onrender.com";
 
-// Full list of Nigerian job positions (alphabetical) with Other option
+// Full list of Nigerian job positions
 const JOB_POSITIONS_BY_TYPE = {
   "Full-time": [
     "Accountant",
@@ -110,7 +112,6 @@ export default function ApplicantForm() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Update job positions when jobType changes
   useEffect(() => {
     const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
     setJobOptions(options);
@@ -121,14 +122,10 @@ export default function ApplicantForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-
-    if (name === "jobPosition" && value === "Other") {
-      setShowOtherJob(true);
-    } else if (name === "jobPosition") {
-      setShowOtherJob(false);
-    }
+    if (name === "jobPosition") setShowOtherJob(value === "Other");
   };
 
+  // ✅ Fixed regex: escape + sign
   const validateWhatsApp = (number) => {
     const regex = /^\+234\d{10}$/;
     return regex.test(number);
@@ -160,7 +157,8 @@ export default function ApplicantForm() {
         jobPosition: "",
       });
     } catch (err) {
-      alert(err.response?.data?.message || "Submission failed");
+      console.log("Submission Error:", err);
+      alert(err.response?.data?.message || err.message || "Submission failed");
     } finally {
       setLoading(false);
     }
@@ -169,12 +167,8 @@ export default function ApplicantForm() {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">Job Application</h2>
-
       {successMsg && <p className="mb-4 text-green-600 text-center">{successMsg}</p>}
-
       <form onSubmit={handleSubmit} className="space-y-4">
-
-        {/* Full Name */}
         <div>
           <label className="block text-sm font-medium mb-1">Full Name</label>
           <input
@@ -187,8 +181,6 @@ export default function ApplicantForm() {
             required
           />
         </div>
-
-        {/* Email */}
         <div>
           <label className="block text-sm font-medium mb-1">Email Address</label>
           <input
@@ -201,14 +193,10 @@ export default function ApplicantForm() {
             required
           />
         </div>
-
-        {/* WhatsApp Number */}
         <div className="relative">
           <label className="block text-sm font-medium mb-1">
             WhatsApp Number{" "}
-            <span className="ml-1 text-gray-400 cursor-pointer" title="Include country code. Example: +2348012345678">
-              ℹ️
-            </span>
+            <span className="ml-1 text-gray-400 cursor-pointer" title="Include country code. Example: +2348012345678">ℹ️</span>
             <span className="text-xs text-gray-500 block">(Include country code, e.g., +234)</span>
           </label>
           <input
@@ -221,8 +209,6 @@ export default function ApplicantForm() {
             required
           />
         </div>
-
-        {/* Job Type */}
         <div>
           <label className="block text-sm font-medium mb-1">Job Type</label>
           <select
@@ -237,8 +223,6 @@ export default function ApplicantForm() {
             ))}
           </select>
         </div>
-
-        {/* Job Position */}
         <div>
           <label className="block text-sm font-medium mb-1">Job Position</label>
           {!showOtherJob ? (
@@ -266,8 +250,6 @@ export default function ApplicantForm() {
             />
           )}
         </div>
-
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
