@@ -23,12 +23,10 @@ jobs:
       # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: ./job-link-frontend
 
       # 4️⃣ Build React app
       - name: Build React App
         run: npm run build
-        working-directory: ./job-link-frontend
 
       # 5️⃣ Setup Java 17
       - name: Setup Java
@@ -40,17 +38,15 @@ jobs:
       # 6️⃣ Install Capacitor Android
       - name: Install Capacitor Android
         run: npm install @capacitor/android
-        working-directory: ./job-link-frontend
 
       # 7️⃣ Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
-        working-directory: ./job-link-frontend
 
       # 8️⃣ Build APK
       - name: Build APK
         run: |
-          cd job-link-frontend/android
+          cd android
           ./gradlew assembleDebug
 
       # 9️⃣ Upload APK as artifact
@@ -58,4 +54,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: job-link-frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
