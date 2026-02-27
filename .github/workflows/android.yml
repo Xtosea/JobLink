@@ -1,5 +1,6 @@
-name: Build Android Release APK
+name: Build Android APK
 
+# Trigger workflow on pushes to main
 on:
   push:
     branches:
@@ -12,44 +13,44 @@ jobs:
     steps:
       # 1️⃣ Checkout repo
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # 2️⃣ Setup NodeJS >=22
-      - name: Setup Node
+      # 2️⃣ Setup NodeJS (>=22 required by Capacitor CLI)
+      - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
-      # 3️⃣ Install frontend dependencies
+      # 3️⃣ Install dependencies
       - name: Install dependencies
-        working-directory: ./job-link-frontend
         run: npm install
+        working-directory: ./  # repo root
 
       # 4️⃣ Build React app
       - name: Build React App
-        working-directory: ./job-link-frontend
         run: npm run build
+        working-directory: ./  # repo root
 
       # 5️⃣ Setup Java
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
-      # 6️⃣ Sync Capacitor
+      # 6️⃣ Sync Capacitor with Android platform
       - name: Sync Capacitor
-        working-directory: ./job-link-frontend
         run: npx cap sync android
+        working-directory: ./  # repo root
 
-      # 7️⃣ Build release APK
+      # 7️⃣ Build the APK
       - name: Build Release APK
-        working-directory: ./job-link-frontend/android
         run: ./gradlew assembleRelease
+        working-directory: ./android
 
-      # 8️⃣ Upload release APK
-      - name: Upload Release APK
+      # 8️⃣ Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: ./job-link-frontend/android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
