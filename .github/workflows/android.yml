@@ -1,0 +1,52 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup NodeJS (Capacitor requires Node >=22)
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Build React app
+      - name: Build React App
+        run: npm run build
+
+      # 5️⃣ Setup Java 21 (Required for Capacitor 8)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # 6️⃣ Sync Capacitor
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      # 7️⃣ Build Release APK
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+        working-directory: android
+
+      # 8️⃣ Upload APK Artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
