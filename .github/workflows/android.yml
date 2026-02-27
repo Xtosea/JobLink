@@ -1,6 +1,5 @@
 name: Build Android APK
 
-# Trigger workflow on pushes to main
 on:
   push:
     branches:
@@ -24,12 +23,12 @@ jobs:
       # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
-        working-directory: ./  # repo root
+        working-directory: ./  # root of JobLink repo
 
       # 4️⃣ Build React app
       - name: Build React App
         run: npm run build
-        working-directory: ./  # repo root
+        working-directory: ./  # root of JobLink repo
 
       # 5️⃣ Setup Java
       - name: Setup Java
@@ -41,7 +40,7 @@ jobs:
       # 6️⃣ Sync Capacitor with Android platform
       - name: Sync Capacitor
         run: npx cap sync android
-        working-directory: ./  # repo root
+        working-directory: ./  # root of JobLink repo
 
       # 7️⃣ Build the APK
       - name: Build Release APK
