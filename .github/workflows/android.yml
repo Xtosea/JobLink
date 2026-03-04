@@ -1,48 +1,31 @@
-name: Build Signed Release APK
+name: Build Android
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Node
-  uses: actions/setup-node@v4
-  with:
-    node-version: 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'   # <-- Make sure this is indented 2 spaces
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Build Web App
-        run: npm run build
-
-      - name: Sync Capacitor
+      - name: Sync Capacitor Android
         run: npx cap sync android
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
-
-      - name: Build Signed Release APK
-        working-directory: android
-        run: ./gradlew assembleRelease
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: joblink-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+      - name: Build Android APK
+        run: cd android && ./gradlew assembleRelease
