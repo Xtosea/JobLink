@@ -1,49 +1,53 @@
-name: Android Build
+name: Build Android
 
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
 
-    env:
-      # Make sure you have added this secret in your repo settings
-      GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-
     steps:
-      # Step 1: Checkout code
-      - name: Checkout repo
+      # 1️⃣ Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js (match your Capacitor requirement)
-      - name: Setup Node
+      # 2️⃣ Set up Node (required by Capacitor)
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "22"
+          node-version: 22  # Capacitor 8 requires Node >=22
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
+      # 3️⃣ Install dependencies
+      - name: Install npm packages
         run: npm install
 
-      # Step 4: Prepare google-services.json
-      - name: Create google-services.json
+      # 4️⃣ Decode google-services.json from secret
+      - name: Setup google-services.json
         run: |
           mkdir -p android/app
           echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
 
-      # Step 5: Build Android release
-      - name: Build Android release
+      # 5️⃣ Verify google-services.json exists
+      - name: Verify google-services.json
+        run: |
+          ls -la android/app
+          head -n 10 android/app/google-services.json
+
+      # 6️⃣ Build Android APK
+      - name: Build release APK
         run: |
           cd android
-          ./gradlew clean assembleRelease --stacktrace
+          ./gradlew clean assembleRelease
 
-      # Step 6: Upload APK as artifact
+      # 7️⃣ Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: JobLink-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
