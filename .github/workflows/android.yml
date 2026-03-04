@@ -1,44 +1,47 @@
-name: Android Release Build
+name: Android Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # 1️⃣ Checkout your repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 17
-
+      # 2️⃣ Set up Node.js (v22)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install dependencies
-        run: |
-          npm ci
+      # 3️⃣ Install dependencies
+      - name: Install npm dependencies
+        run: npm ci
 
-      - name: Create google-services.json
+      # 4️⃣ Cache node_modules (optional, speeds up workflow)
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 5️⃣ Decode your Google Services JSON (from GitHub Secrets)
+      - name: Setup Firebase
         run: |
           mkdir -p android/app
           echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
-      - name: Build release APK
-        run: |
-          cd android
-          ./gradlew clean assembleRelease --stacktrace
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+      # 6️⃣ Build the Android release
+      - name: Build Android Release
+        run: ./gradlew assembleRelease
