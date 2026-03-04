@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main  # change if your default branch is different
+      - main
 
 jobs:
   build-android:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js (v22 required by Capacitor)
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -33,18 +33,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 5️⃣ Capacitor sync (ensures :capacitor-android exists)
+      # 5️⃣ Capacitor sync
       - name: Sync Capacitor Android
         run: npx cap sync android
 
-      # 6️⃣ Setup JDK for Gradle build
+      # 6️⃣ Debug step: check Capacitor Android module
+      - name: Debug: Capacitor Android folder
+        run: |
+          echo "Listing node_modules/@capacitor/android:"
+          ls -l node_modules/@capacitor/android
+          echo "Listing Android project variants:"
+          cd android
+          ./gradlew :app:tasks --all
+
+      # 7️⃣ Setup JDK
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
 
-      # 7️⃣ Cache Gradle dependencies
+      # 8️⃣ Cache Gradle
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -55,12 +64,12 @@ jobs:
           restore-keys: |
             gradle-cache-
 
-      # 8️⃣ Clean & build the release APK
+      # 9️⃣ Build Release APK
       - name: Build Release APK
         working-directory: android
         run: ./gradlew clean assembleRelease --stacktrace
 
-      # 9️⃣ Upload APK artifact
+      # 🔟 Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
