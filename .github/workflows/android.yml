@@ -10,61 +10,62 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_VERSION: '22'
+      JAVA_VERSION: '17'
+
     steps:
-      # 1️⃣ Checkout the repository
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js (required for Capacitor)
-      - name: Set up Node 22
-        uses: actions/setup-node@v4
+      # 2️⃣ Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
 
-      # 3️⃣ Setup Java 17 (required for Gradle Android build)
-      - name: Set up Java 17
+      # 3️⃣ Set up Java 17
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
 
-      # 4️⃣ Install npm dependencies
-      - name: Install npm dependencies
-        run: npm ci
-        working-directory: .
-
-      # 5️⃣ Decode keystore for signing
-      - name: Decode keystore
+      # 4️⃣ Decode Keystore
+      - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/joblink-release-key.jks
 
-      # 6️⃣ Decode google-services.json
-      - name: Decode google-services.json
+      # 5️⃣ Decode google-services.json
+      - name: Decode Google Services JSON
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > android/app/google-services.json
 
-      # 7️⃣ Sync Capacitor Android project
-      - name: Capacitor sync Android
+      # 6️⃣ Install npm dependencies
+      - name: Install npm packages
+        run: npm install
+
+      # 7️⃣ Sync Capacitor
+      - name: Capacitor Sync
         run: npx cap sync android
-        working-directory: .
 
-      # 8️⃣ Make Gradle wrapper executable
+      # 8️⃣ Make Gradle executable
       - name: Make Gradle executable
-        run: chmod +x ./gradlew
-        working-directory: android
+        run: chmod +x android/gradlew
 
-      # 9️⃣ Clean previous builds
+      # 9️⃣ Clean project
       - name: Clean project
         run: ./gradlew clean
         working-directory: android
 
-      # 🔟 Build the release APK
+      # 🔟 Build Release APK
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --no-daemon --max-workers=2
         working-directory: android
 
-      # 1️⃣1️⃣ Upload the generated APK artifact
-      - name: Upload APK Artifact
+      # 1️⃣1️⃣ Upload the APK artifact
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: joblink-release-apk
