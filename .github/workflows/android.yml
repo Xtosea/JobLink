@@ -47,7 +47,7 @@ jobs:
         run: ./gradlew clean assembleRelease
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: joblink-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+  uses: actions/upload-artifact@v3
+  with:
+    name: joblink-release-apk
+    path: android/app/build/outputs/apk/release/app-release.apk
