@@ -13,41 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout your repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node (required by Capacitor)
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 22  # Capacitor 8 requires Node >=22
+          node-version: '22'   # @capacitor/cli requires Node >=22
 
       # 3️⃣ Install dependencies
-      - name: Install npm packages
+      - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Decode google-services.json from secret
-      - name: Setup google-services.json
-        run: |
-          mkdir -p android/app
-          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
-
-      # 5️⃣ Verify google-services.json exists
-      - name: Verify google-services.json
-        run: |
-          ls -la android/app
-          head -n 10 android/app/google-services.json
-
-      # 6️⃣ Build Android APK
-      - name: Build release APK
-        run: |
-          cd android
-          ./gradlew clean assembleRelease
-
-      # 7️⃣ Upload APK artifact
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      # 4️⃣ Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
         with:
-          name: JobLink-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          api-level: 34
+          build-tools: '34.0.0'
+          ndk: 25.2.9519653
+
+      # 5️⃣ Build the app
+      - name: Build Android Release
+        working-directory: android
+        run: ./gradlew assembleRelease
