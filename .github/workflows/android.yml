@@ -10,14 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22'
 
+      # 3️⃣ Cache npm dependencies
       - name: Cache npm
         uses: actions/cache@v3
         with:
@@ -26,18 +29,31 @@ jobs:
           restore-keys: |
             npm-cache-
 
+      # 4️⃣ Install Node dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 5️⃣ Sync Capacitor Android
       - name: Sync Capacitor Android
         run: npx cap sync android
 
+      # 6️⃣ Debug: check Capacitor Android folder and Gradle variants
+      - name: Debug Capacitor & Gradle
+        run: |
+          echo "Listing node_modules/@capacitor/android:"
+          ls -l node_modules/@capacitor/android
+          echo "Listing Gradle tasks/variants:"
+          cd android
+          ./gradlew :app:tasks --all
+
+      # 7️⃣ Setup JDK
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
 
+      # 8️⃣ Cache Gradle dependencies
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -48,21 +64,23 @@ jobs:
           restore-keys: |
             gradle-cache-
 
-      # 🔐 Create keystore file from secret
+      # 9️⃣ Prepare Keystore from secrets
       - name: Prepare Keystore
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/joblink-release-key.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
 
-      # 🛠 Build release APK
+      # 🔟 Build Release APK (signed) – fixed multi-line -P issue
       - name: Build Release APK
         working-directory: android
-        run: ./gradlew clean assembleRelease \
-          -Pandroid.injected.signing.store.file=app/joblink-release-key.jks \
-          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-          -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
+        run: >
+          ./gradlew clean assembleRelease
+          -Pandroid.injected.signing.store.file=app/joblink-release-key.jks
+          -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}"
+          -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}"
+          -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
           --stacktrace
 
+      # 1️⃣1️⃣ Upload signed APK
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
