@@ -1,4 +1,4 @@
-name: Build Signed Android APK with Capacitor Fix
+name: Build Signed Android APK with Capacitor
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -43,7 +43,24 @@ jobs:
             echo "capacitor-android folder exists"
           fi
 
-      # 6️⃣ Debug Capacitor folders
+      # 6️⃣ Fix settings.gradle for Capacitor
+      - name: Fix settings.gradle for Capacitor
+        run: |
+          SETTINGS_FILE=android/settings.gradle
+          CAP_MODULE="include ':capacitor-android'"
+          CAP_PATH="project(':capacitor-android').projectDir = new File(rootDir, '../node_modules/@capacitor/android')"
+
+          if ! grep -q "$CAP_MODULE" "$SETTINGS_FILE"; then
+            echo "$CAP_MODULE" >> "$SETTINGS_FILE"
+          fi
+
+          if ! grep -q "project(':capacitor-android').projectDir" "$SETTINGS_FILE"; then
+            echo "$CAP_PATH" >> "$SETTINGS_FILE"
+          fi
+
+          echo "settings.gradle updated to include capacitor-android"
+
+      # 7️⃣ Debug Capacitor folders
       - name: Debug Capacitor Android Folders
         run: |
           echo "Listing node_modules/@capacitor/android:"
@@ -51,14 +68,14 @@ jobs:
           echo "Listing android/capacitor-android:"
           ls -l android/capacitor-android || echo "Missing android/capacitor-android"
 
-      # 7️⃣ Setup JDK
+      # 8️⃣ Setup JDK
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
 
-      # 8️⃣ Cache Gradle dependencies
+      # 9️⃣ Cache Gradle dependencies
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -69,12 +86,12 @@ jobs:
           restore-keys: |
             gradle-cache-
 
-      # 9️⃣ Prepare Keystore from secrets
+      # 🔟 Prepare Keystore from secrets
       - name: Prepare Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
 
-      # 🔟 Build Release APK (signed)
+      # 1️⃣1️⃣ Build Release APK (signed)
       - name: Build Release APK
         working-directory: android
         run: >
@@ -85,7 +102,7 @@ jobs:
           -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
           --stacktrace
 
-      # 1️⃣1️⃣ Upload signed APK
+      # 1️⃣2️⃣ Upload signed APK
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
