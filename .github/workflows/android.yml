@@ -18,11 +18,11 @@ jobs:
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node 22+
+      # 2️⃣ Setup Node.js 22+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -35,13 +35,23 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # 4️⃣ Install dependencies
+      # 4️⃣ Install npm dependencies
       - name: Install npm dependencies
         run: npm ci
 
-      # 5️⃣ Ensure Capacitor Android folder
+      # 5️⃣ Ensure Capacitor Android folder & assets
       - name: Ensure Capacitor Android folder
         run: |
+          # Make sure assets folder exists
+          mkdir -p android/app/src/main/assets
+
+          # Create empty capacitor.plugins.json if missing
+          if [ ! -f android/app/src/main/assets/capacitor.plugins.json ]; then
+            echo '{}' > android/app/src/main/assets/capacitor.plugins.json
+            echo "Created empty capacitor.plugins.json"
+          fi
+
+          # Update Android if capacitor-android folder is missing
           if [ ! -d android/capacitor-android ]; then
             echo "capacitor-android folder missing — running npx cap update android..."
             npx cap update android
@@ -49,8 +59,8 @@ jobs:
             echo "capacitor-android folder exists"
           fi
 
-      # 6️⃣ Fix settings.gradle
-      - name: Fix settings.gradle for Capacitor
+      # 6️⃣ Fix settings.gradle for Capacitor
+      - name: Fix settings.gradle
         run: |
           SETTINGS_FILE=android/settings.gradle
           CAP_MODULE="include ':capacitor-android'"
