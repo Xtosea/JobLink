@@ -1,5 +1,12 @@
+<<<<<<< Updated upstream
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'  // For Firebase
+=======
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+}
+>>>>>>> Stashed changes
 
 android {
     namespace = "com.job.links"

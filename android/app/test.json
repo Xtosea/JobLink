@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1041686183975",
+    "project_id": "joblink-nigeria",
+    "storage_bucket": "joblink-nigeria.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041686183975:android:7ae8e95e49e4ffe20c0e02",
+        "android_client_info": {
+          "package_name": "job.link"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAErQk4Nhb1G2gbZx0YtDDfCZaKSzO1IoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
