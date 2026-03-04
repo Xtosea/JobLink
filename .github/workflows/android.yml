@@ -14,11 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
+      # 2️⃣ Setup Node.js (updated to 22)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '22'
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
         working-directory: android
         run: ./gradlew assembleRelease --stacktrace
 
-      # 7️⃣ Upload APK (updated to v4)
+      # 7️⃣ Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
