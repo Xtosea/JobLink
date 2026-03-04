@@ -2,8 +2,7 @@ name: Build Signed Android APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -11,72 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE_VERSION: 22
-      ANDROID_SDK_ROOT: /usr/local/android-sdk
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js 22+
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 22
 
-      # 3️⃣ Setup Java (needed for Gradle)
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      # 4️⃣ Install npm dependencies
-      - name: Install npm dependencies
+      - name: Install dependencies
         run: npm ci
 
-      # 5️⃣ Ensure Capacitor Android folder & assets
-      - name: Ensure Capacitor Android folder
-        run: |
-          # Make sure assets folder exists
-          mkdir -p android/app/src/main/assets
+      - name: Sync Capacitor
+        run: npx cap sync android
 
-          # Create empty capacitor.plugins.json if missing
-          if [ ! -f android/app/src/main/assets/capacitor.plugins.json ]; then
-            echo '{}' > android/app/src/main/assets/capacitor.plugins.json
-            echo "Created empty capacitor.plugins.json"
-          fi
-
-          # Update Android if capacitor-android folder is missing
-          if [ ! -d android/capacitor-android ]; then
-            echo "capacitor-android folder missing — running npx cap update android..."
-            npx cap update android
-          else
-            echo "capacitor-android folder exists"
-          fi
-
-      # 6️⃣ Fix settings.gradle for Capacitor
-      - name: Fix settings.gradle
-        run: |
-          SETTINGS_FILE=android/settings.gradle
-          CAP_MODULE="include ':capacitor-android'"
-          CAP_PATH="project(':capacitor-android').projectDir = new File(rootDir, '../node_modules/@capacitor/android')"
-
-          if ! grep -q "$CAP_MODULE" "$SETTINGS_FILE"; then
-            echo "$CAP_MODULE" >> "$SETTINGS_FILE"
-          fi
-
-          if ! grep -q "project(':capacitor-android').projectDir" "$SETTINGS_FILE"; then
-            echo "$CAP_PATH" >> "$SETTINGS_FILE"
-          fi
-
-          echo "settings.gradle updated to include capacitor-android"
-
-      # 7️⃣ Build signed APK
       - name: Build signed APK
         run: |
           cd android
