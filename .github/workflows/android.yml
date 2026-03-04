@@ -1,49 +1,55 @@
-name: Build Signed Android APK with Capacitor
+name: Build Signed Android APK
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_VERSION: 22
+      ANDROID_SDK_ROOT: /usr/local/android-sdk
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js
+      # 2️⃣ Setup Node 22+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
 
-      # 3️⃣ Cache npm dependencies
-      - name: Cache npm
-        uses: actions/cache@v3
+      # 3️⃣ Setup Java (needed for Gradle)
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          path: ~/.npm
-          key: npm-cache-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            npm-cache-
+          distribution: temurin
+          java-version: 17
 
-      # 4️⃣ Install Node dependencies
-      - name: Install dependencies
+      # 4️⃣ Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      # 5️⃣ Ensure Capacitor Android folder exists
+      # 5️⃣ Ensure Capacitor Android folder
       - name: Ensure Capacitor Android folder
         run: |
           if [ ! -d android/capacitor-android ]; then
-            echo "capacitor-android folder missing — creating..."
+            echo "capacitor-android folder missing — running npx cap update android..."
             npx cap update android
           else
             echo "capacitor-android folder exists"
           fi
 
-      # 6️⃣ Fix settings.gradle for Capacitor
+      # 6️⃣ Fix settings.gradle
       - name: Fix settings.gradle for Capacitor
         run: |
           SETTINGS_FILE=android/settings.gradle
@@ -60,51 +66,13 @@ jobs:
 
           echo "settings.gradle updated to include capacitor-android"
 
-      # 7️⃣ Debug Capacitor folders
-      - name: Debug Capacitor Android Folders
+      # 7️⃣ Build signed APK
+      - name: Build signed APK
         run: |
-          echo "Listing node_modules/@capacitor/android:"
-          ls -l node_modules/@capacitor/android || echo "Missing node_modules/@capacitor/android"
-          echo "Listing android/capacitor-android:"
-          ls -l android/capacitor-android || echo "Missing android/capacitor-android"
-
-      # 8️⃣ Setup JDK
-      - name: Setup JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 17
-
-      # 9️⃣ Cache Gradle dependencies
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper/
-          key: gradle-cache-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-cache-
-
-      # 🔟 Prepare Keystore from secrets
-      - name: Prepare Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
-
-      # 1️⃣1️⃣ Build Release APK (signed)
-      - name: Build Release APK
-        working-directory: android
-        run: >
-          ./gradlew clean assembleRelease
-          -Pandroid.injected.signing.store.file=app/joblink-release-key.jks
-          -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}"
-          -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}"
-          -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
-          --stacktrace
-
-      # 1️⃣2️⃣ Upload signed APK
-      - name: Upload Signed APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: JobLink-signed-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          cd android
+          chmod +x gradlew
+          ./gradlew clean assembleRelease \
+            -Pandroid.injected.signing.store.file=app/joblink-release-key.jks \
+            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
