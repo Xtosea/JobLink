@@ -1,40 +1,74 @@
-name: Build Signed APK
+name: Build Android Release APK
 
 on:
   push:
     branches:
-      - main
+      - main   # run only on pushes to main
+  workflow_dispatch:  # allows manual trigger
 
 jobs:
   build:
+    name: Build Release APK
     runs-on: ubuntu-latest
 
+    env:
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk  # ensure Gradle uses Java 17
+
     steps:
-      - name: Checkout repository
+      # 1️⃣ Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      # 2️⃣ Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      # 3️⃣ Install dependencies
+      - name: Install NPM dependencies
+        run: npm ci
 
-      - name: Setup Java 17
+      # 4️⃣ Setup Java for Gradle
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
-      - name: Accept licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install SDK packages
+      # 5️⃣ Decode google-services.json from GitHub Secret
+      - name: Setup Firebase Config
         run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+
+      # 6️⃣ Decode keystore from GitHub Secret
+      - name: Setup Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
+
+      # 7️⃣ Setup Gradle cache
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # 8️⃣ Build release APK
+      - name: Build Release APK
+        run: |
+          cd android
+          ./gradlew clean assembleRelease --stacktrace
+
+      # 9️⃣ Upload APK artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: JobLink-Release-APK
+          path: android/app/build/outputs/apk/release/app-release.apk        run: |
           sdkmanager "platform-tools" \
                      "platforms;android-36" \
                      "build-tools;36.0.0"
