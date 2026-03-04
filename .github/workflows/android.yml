@@ -1,4 +1,4 @@
-name: Build Signed Android APK with Capacitor Debug
+name: Build Signed Android APK with Capacitor Fix
 
 on:
   push:
@@ -33,9 +33,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 5️⃣ Sync Capacitor Android
-      - name: Sync Capacitor Android
-        run: npx cap sync android
+      # 5️⃣ Ensure Capacitor Android folder exists
+      - name: Ensure Capacitor Android folder
+        run: |
+          if [ ! -d android/capacitor-android ]; then
+            echo "capacitor-android folder missing — creating..."
+            npx cap update android
+          else
+            echo "capacitor-android folder exists"
+          fi
 
       # 6️⃣ Debug Capacitor folders
       - name: Debug Capacitor Android Folders
