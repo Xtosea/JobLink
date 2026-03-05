@@ -2,42 +2,54 @@ name: Build Signed Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
 
-    env:
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout your repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - uses: actions/setup-java@v3
+      # 2️⃣ Set up Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
-      - name: Install dependencies
+      # 3️⃣ Install Node.js (for Capacitor / npm)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # match your project Node version
+          cache: 'npm'
+
+      # 4️⃣ Install npm dependencies
+      - name: Install npm dependencies
         run: npm ci
 
+      # 5️⃣ Build web assets
+      - name: Build web app
+        run: npm run build
+
+      # 6️⃣ Sync Capacitor to Android
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build signed APK
+      # 7️⃣ Build signed APK
+      - name: Build Signed APK
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew clean assembleRelease \
-            -Pandroid.injected.signing.store.file=app/joblink-release-key.jks \
-            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+          ./gradlew clean assembleRelease --stacktrace
+
+      # 8️⃣ Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: JobLink-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
