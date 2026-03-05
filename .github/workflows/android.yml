@@ -27,11 +27,12 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      # ✅ FIX: use Java 21 instead of 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Install Android SDK 34
         run: |
