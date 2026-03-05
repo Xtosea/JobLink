@@ -1,7 +1,5 @@
-rootProject.name = "app" // or your project name
+rootProject.name = "app"
 
 include ':app'
 
-// Include Capacitor Android module
-include ':capacitor-android'
-project(':capacitor-android').projectDir = new File(rootDir, '../node_modules/@capacitor/android')
+apply from: 'capacitor.settings.gradle'
