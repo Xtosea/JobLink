@@ -8,66 +8,55 @@ on:
 
 jobs:
   build-android:
-    name: Build Android APK
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node.js 22
+      # 2. Setup Node.js 22
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
-      # 3️⃣ Verify Node.js
-      - name: Check Node.js version
-        run: node -v
-
-      # 4️⃣ Set up Java 17
-      - name: Set up Java
+      # 3. Setup Java 17
+      - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
           java-version: 17
+          distribution: temurin
 
-      # 5️⃣ Cache Node modules for faster builds
+      # 4. Cache Node modules
       - name: Cache Node modules
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.npm
-            node_modules
+          path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # 6️⃣ Install dependencies
+      # 5. Install dependencies
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      # 7️⃣ Build React project
-      - name: Build React App
+      # 6. Build React web app
+      - name: Build web app
         run: npm run build
 
-      # 8️⃣ Sync Capacitor (Android)
-      - name: Capacitor Sync Android
+      # 7. Sync Capacitor Android
+      - name: Sync Capacitor Android
         run: npx cap sync android
 
-      # 9️⃣ Build signed Android APK
-      - name: Build Signed APK
-        run: |
-          cd android
-          ./gradlew clean assembleRelease -Pandroid.injected.signing.store.file=joblink-release-key.jks \
-                                        -Pandroid.injected.signing.store.password=$JOBLINK_KEYSTORE_PASSWORD \
-                                        -Pandroid.injected.signing.key.alias=joblink \
-                                        -Pandroid.injected.signing.key.password=$JOBLINK_KEY_PASSWORD
+      # 8. Build signed APK
+      - name: Build signed Android APK
+        working-directory: android
+        run: ./gradlew assembleRelease --stacktrace
 
-      # 🔟 Upload APK
+      # 9. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: JobLink-Release-APK
+          name: JobLink-APK
           path: android/app/build/outputs/apk/release/app-release.apk
