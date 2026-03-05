@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.job.links"
-    compileSdk = 36  // Updated to match androidx dependencies
+    compileSdk = 34
 
     defaultConfig {
         applicationId "com.job.links"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -19,10 +19,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     signingConfigs {
@@ -55,8 +51,8 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force "androidx.activity:activity:1.11.0"
-        force "androidx.core:core:1.17.0"
-        force "androidx.core:core-ktx:1.17.0"
+        force "androidx.activity:activity:1.8.2"
+        force "androidx.core:core:1.12.0"
+        force "androidx.core:core-ktx:1.12.0"
     }
 }
