@@ -5,18 +5,16 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.xtosea.joblink"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    applicationId "com.xtosea.joblink"
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
 
-        aaptOptions {
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
-        }
-    }
+    // Use environment variable if available, else default to 1
+    versionCode System.getenv("VERSION_CODE")?.toInteger() ?: 1
+    versionName "1.0.${System.getenv("VERSION_NAME_SUFFIX") ?: "0"}"
 
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+}
     signingConfigs {
         release {
             storeFile file("../joblink-release-key.jks") // relative to app/
