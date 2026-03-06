@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # These are GitHub secrets you should add
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -27,23 +27,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build React web assets
+      - name: Build React app
         run: npm run build
 
-      - name: Sync Capacitor Android
-        run: npx cap sync android
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - name: Setup Java & Android SDK
+        uses: android-actions/setup-android@v2
         with:
-          distribution: temurin
-          java-version: 17
+          api-level: 33
+          build-tools: 33.0.2
 
-      - name: Build Android APK
-        working-directory: android
-        run: ./gradlew assembleRelease
+      - name: Decode keystore
+        run: |
+          mkdir -p android
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/joblink-release-key.jks
 
-      - name: Upload Signed APK
+      - name: Build Release APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleRelease
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: JobLink-release-apk
