@@ -32,9 +32,6 @@ jobs:
 
       - name: Setup Java & Android SDK
         uses: android-actions/setup-android@v2
-        with:
-          api-level: 33
-          build-tools: 33.0.2
 
       - name: Decode keystore
         run: |
@@ -45,6 +42,9 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
+          # Auto-increment versionCode using timestamp
+          export VERSION_CODE=$(date +%s)
+          export VERSION_NAME_SUFFIX=$(date +%Y%m%d%H%M)
           ./gradlew assembleRelease
 
       - name: Upload APK
