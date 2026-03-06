@@ -9,52 +9,42 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
 
+    env:
+      # These are GitHub secrets you should add
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
     steps:
-      # 1. Checkout the repo
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2. Setup Node (for Capacitor build)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # match your project Node version
+          node-version: 22
 
-      # 3. Install npm dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Build the web assets (React)
-      - name: Build Web Assets
+      - name: Build React web assets
         run: npm run build
 
-      # 5. Setup Android SDK
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          api-level: 33
-          build-tools: 33.0.2
+          distribution: temurin
+          java-version: 17
 
-      # 6. Decode keystore from secrets
-      - name: Setup Android Keystore
-        run: |
-          mkdir -p android
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/joblink-release-key.jks
+      - name: Build Android APK
+        working-directory: android
+        run: ./gradlew assembleRelease
 
-      # 7. Build signed APK
-      - name: Build Release APK
-        run: |
-          cd android
-          chmod +x ./gradlew
-          ./gradlew assembleRelease
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-
-      # 8. Upload APK as artifact
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: Upload Signed APK
+        uses: actions/upload-artifact@v4
         with:
           name: JobLink-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
