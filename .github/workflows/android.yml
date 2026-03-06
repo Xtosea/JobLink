@@ -10,42 +10,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18
 
+      # Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # Build React
       - name: Build React
         run: npm run build
 
+      # Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # ✅ FIX: use Java 21 instead of 17
+      # Setup Java (IMPORTANT: Java 17)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
 
-      - name: Install Android SDK 34
+      # Install Android SDK
+      - name: Install Android SDK
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+          "platforms;android-34" \
+          "build-tools;34.0.0"
 
-      - name: Build APK
+      # Decode Keystore
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
+
+      # Build Signed APK
+      - name: Build Signed APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
+      # Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: joblink-apk
+          name: joblink-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
