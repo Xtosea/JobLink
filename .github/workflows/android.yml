@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
-      - name: Checkout repository
+      # 1️⃣ Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       # 2️⃣ Setup Node
@@ -24,32 +24,32 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Ensure Capacitor Android exists only if missing
-      - name: Ensure Capacitor Android
-        run: |
-          if [ ! -d "./android" ]; then
-            npx cap add android
-          fi
-
-      # 5️⃣ Build React frontend
+      # 4️⃣ Build React frontend
       - name: Build React
         run: npm run build
 
-      # 6️⃣ Sync Capacitor Android
+      # 5️⃣ Add Capacitor Android platform
       - name: Capacitor Sync
         run: npx cap sync android
 
-      # 7️⃣ Setup Java 17
+      # 6️⃣ Setup Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 8️⃣ Install Android SDK + Build Tools
+      # 7️⃣ Install Android SDK + Build Tools
       - name: Install Android SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
+      # 8️⃣ Decode keystore from GitHub secret
+      - name: Setup Keystore
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/joblink-release-key.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
       # 9️⃣ Build release APK
       - name: Build APK
@@ -58,7 +58,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # 🔟 Upload APK artifact
+      # 🔟 Upload signed APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
