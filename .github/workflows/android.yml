@@ -10,29 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Node
+      # Node (Required for Capacitor)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
-      # Install dependencies
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      # Build React
-      - name: Build React
+      - name: Build React App
         run: npm run build
 
       # Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # Setup Java (IMPORTANT: Java 17)
+      # Java for Android build
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -46,19 +43,14 @@ jobs:
           "platforms;android-34" \
           "build-tools;34.0.0"
 
-      # Decode Keystore
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/joblink-release-key.jks
-
       # Build Signed APK
-      - name: Build Signed APK
+      - name: Build Release APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # Upload APK
+      # Upload APK Artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
