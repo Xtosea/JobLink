@@ -1,10 +1,13 @@
+// pages/ProofUpload.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { Capacitor } from "@capacitor/core";
 
 export default function ProofUpload() {
   const { token: rawToken } = useParams();
-  const token = rawToken.split("/").pop(); // handle tracking links
+  // handle links coming from email or web / APK
+  const token = rawToken?.split("/").pop();
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
@@ -13,10 +16,16 @@ export default function ProofUpload() {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const apiBase = process.env.REACT_APP_API_BASE;
+  // ================= API BASE =================
+  const apiBase =
+    Capacitor.getPlatform() === "web"
+      ? "http://localhost:5000"
+      : "https://joblinkbackend.onrender.com";
 
-  // Fetch application by token
+  // ================= FETCH APPLICATION =================
   useEffect(() => {
+    if (!token) return navigate("/");
+
     axios
       .get(`${apiBase}/api/applications/access/${token}`)
       .then((res) => setApplication(res.data))
@@ -27,97 +36,59 @@ export default function ProofUpload() {
   }, [token, apiBase, navigate]);
 
   // ================= UPLOAD TO CLOUDINARY =================
-const uploadToCloudinary = (file, onProgress) => {
-  return new Promise((resolve, reject) => {
-    if (!file) return reject(new Error("No file provided"));
+  const uploadToCloudinary = (file, onProgress) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return reject(new Error("No file provided"));
 
-    console.log("Uploading file:", file.name, file.type, file.size);
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
 
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
 
-    formData.append("file", file);
-    formData.append(
-      "upload_preset",
-      process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
-    );
+      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`);
 
-    const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-    console.log("Using Cloudinary Cloud Name:", cloudName);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && onProgress) {
+          const percent = Math.round((event.loaded * 100) / event.total);
+          onProgress(percent);
+        }
+      };
 
-    xhr.open(
-      "POST",
-      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`
-    );
+      xhr.onload = () => {
+        let response;
+        try {
+          response = JSON.parse(xhr.responseText);
+        } catch {
+          return reject(new Error("Invalid response from Cloudinary"));
+        }
 
-    // Track progress
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable && onProgress) {
-        const percent = Math.round((event.loaded * 100) / event.total);
-        onProgress(percent);
-      }
-    };
+        if (xhr.status !== 200 || !response.secure_url) {
+          return reject(new Error(response.error?.message || "Upload failed"));
+        }
 
-    // On load
-    xhr.onload = () => {
-      let response;
-      try {
-        response = JSON.parse(xhr.responseText);
-      } catch (err) {
-        console.error("Failed to parse Cloudinary response:", xhr.responseText);
-        return reject(new Error("Invalid response from Cloudinary"));
-      }
+        resolve(response.secure_url);
+      };
 
-      if (xhr.status !== 200) {
-        console.error("Cloudinary error response:", response);
-        return reject(new Error(response.error?.message || "Upload failed"));
-      }
+      xhr.onerror = () => reject(new Error("Network error during upload"));
+      xhr.send(formData);
+    });
+  };
 
-      if (!response.secure_url) {
-        console.error("No secure_url returned from Cloudinary:", response);
-        return reject(new Error("Cloud upload failed"));
-      }
-
-      console.log("Uploaded successfully:", response.secure_url);
-      resolve(response.secure_url);
-    };
-
-    xhr.onerror = () => {
-      console.error("XHR error during upload");
-      reject(new Error("Network error during upload"));
-    };
-
-    xhr.send(formData);
-  });
-};
-
-  // Handle form submit
+  // ================= HANDLE FORM SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!proofFile || !resumeFile) {
-      return alert("Please select both files");
-    }
+    if (!proofFile || !resumeFile) return alert("Please select both files");
 
     try {
       setLoading(true);
       setUploadProgress(0);
 
-      // Upload proof → 0–50%
-      const proofUrl = await uploadToCloudinary(proofFile, (p) =>
-        setUploadProgress(Math.round(p / 2))
-      );
+      const proofUrl = await uploadToCloudinary(proofFile, (p) => setUploadProgress(Math.round(p / 2)));
+      const resumeUrl = await uploadToCloudinary(resumeFile, (p) => setUploadProgress(50 + Math.round(p / 2)));
 
-      // Upload resume → 50–100%
-      const resumeUrl = await uploadToCloudinary(resumeFile, (p) =>
-        setUploadProgress(50 + Math.round(p / 2))
-      );
-
-      // Save URLs to backend
-      const res = await axios.post(
-        `${apiBase}/api/applications/upload/cloud/${token}`,
-        { proofUrl, resumeUrl }
-      );
+      const res = await axios.post(`${apiBase}/api/applications/upload/cloud/${token}`, { proofUrl, resumeUrl });
 
       alert("Files uploaded successfully!");
       navigate(`/history/${res.data.publicToken}`);
@@ -130,11 +101,12 @@ const uploadToCloudinary = (file, onProgress) => {
     }
   };
 
-  if (!application) return <p className="text-center">Loading...</p>;
+  // ================= LOADING / FALLBACK =================
+  if (!application) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-3">Upload Proof & CV</h2>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow mt-10">
+      <h2 className="text-xl font-bold mb-4 text-center">Upload Proof & CV</h2>
 
       <p className="mb-4 text-gray-700">
         Hello <strong>{application.fullname}</strong>, upload your{" "}
@@ -163,7 +135,6 @@ const uploadToCloudinary = (file, onProgress) => {
           />
         </div>
 
-        {/* Progress Bar */}
         {loading && (
           <>
             <div className="w-full bg-gray-200 rounded h-3 overflow-hidden">
@@ -172,20 +143,18 @@ const uploadToCloudinary = (file, onProgress) => {
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
-            <p className="text-sm text-center mt-1">
-              Uploading... {uploadProgress}%
-            </p>
+            <p className="text-sm text-center mt-1">Uploading... {uploadProgress}%</p>
           </>
         )}
 
         <button
           disabled={loading}
-          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
+          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 transition"
         >
           {loading ? "Uploading..." : "Upload Files"}
         </button>
 
-        <label className="text-sm">
+        <label className="text-sm mt-2 block">
           <input type="checkbox" required /> I agree to the{" "}
           <a href="/terms" className="text-green-600 underline">
             Terms & Conditions
