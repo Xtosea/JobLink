@@ -10,47 +10,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Node (Required for Capacitor)
+      # 2️⃣ Setup Node 22 LTS
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install Dependencies
-        run: npm install
+      # 3️⃣ Install NPM dependencies
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build React App
+      # 4️⃣ Build React web app
+      - name: Build React
         run: npm run build
 
-      # Sync Capacitor
-      - name: Sync Capacitor
+      # 5️⃣ Sync Capacitor Android project
+      - name: Capacitor Sync
         run: npx cap sync android
 
-      # Java for Android build
+      # 6️⃣ Setup Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # Install Android SDK
-      - name: Install Android SDK
+      # 7️⃣ Install Android SDK & build tools
+      - name: Setup Android SDK
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-          "platforms;android-34" \
-          "build-tools;34.0.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # Build Signed APK
-      - name: Build Release APK
+      # 8️⃣ Build Signed APK
+      - name: Build APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           cd android
           chmod +x gradlew
+          ./gradlew clean
           ./gradlew assembleRelease
 
-      # Upload APK Artifact
+      # 9️⃣ Upload the APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
