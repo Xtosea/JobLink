@@ -19,7 +19,7 @@ android {
 
     signingConfigs {
     release {
-        storeFile file("joblink-release-key.jks")
+        storeFile file("../joblink-release-key.jks")  // <-- correct path
         storePassword project.property("KEYSTORE_PASSWORD")
         keyAlias project.property("KEY_ALIAS")
         keyPassword project.property("KEY_PASSWORD")
