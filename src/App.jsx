@@ -1,7 +1,6 @@
 // App.js
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
+import { HashRouter as Router, Routes, Route, Link } from "react-router-dom";
 // Applicant pages
 import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
