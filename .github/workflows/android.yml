@@ -24,15 +24,15 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      # 4️⃣ Install Capacitor Android (ensures BridgeActivity exists)
-      - name: Ensure Capacitor Android
+      # 4️⃣ Ensure Capacitor Android is installed
+      - name: Install Capacitor Android
         run: npm install @capacitor/android@5
 
       # 5️⃣ Build React frontend
-      - name: Build React
+      - name: Build React App
         run: npm run build
 
-      # 6️⃣ Sync Capacitor Android
+      # 6️⃣ Sync Capacitor
       - name: Capacitor Sync
         run: npx cap sync android
 
@@ -43,19 +43,28 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # 8️⃣ Install Android SDK 34 + Build Tools
+      # 8️⃣ Install Android SDK + Build Tools
       - name: Install Android SDK
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      # 9️⃣ Build signed APK
+      # 9️⃣ Decode Keystore from Secrets
+      - name: Decode Keystore
+        run: |
+          echo ${{ secrets.KEYSTORE_FILE }} | base64 --decode > android/joblink-release-key.jks
+
+      # 🔟 Build signed APK
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=joblink-release-key.jks \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
 
-      # 🔟 Upload APK artifact
+      # 1️⃣1️⃣ Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
