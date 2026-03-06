@@ -18,13 +18,14 @@ android {
     }
 
     signingConfigs {
-    release {
-        storeFile file("../joblink-release-key.jks")  // <-- correct path
-        storePassword project.property("KEYSTORE_PASSWORD")
-        keyAlias project.property("KEY_ALIAS")
-        keyPassword project.property("KEY_PASSWORD")
+        release {
+            storeFile file("../joblink-release-key.jks") // relative to app/
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
     }
-}
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -32,10 +33,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-} // <-- End of android block
+}
 
 repositories {
-    flatDir {
+    flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
@@ -60,5 +61,5 @@ try {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found, plugin not applied")
 }
