@@ -14,44 +14,51 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node 22
+      # 2️⃣ Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # 3️⃣ Install npm dependencies (use install to avoid lockfile issues)
-      - name: Install npm dependencies
+      # 3️⃣ Install npm dependencies
+      - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Build React frontend
-      - name: Build React frontend
+      # 4️⃣ Ensure Capacitor Android exists only if missing
+      - name: Ensure Capacitor Android
+        run: |
+          if [ ! -d "./android" ]; then
+            npx cap add android
+          fi
+
+      # 5️⃣ Build React frontend
+      - name: Build React
         run: npm run build
 
-      # 5️⃣ Sync Capacitor Android
+      # 6️⃣ Sync Capacitor Android
       - name: Capacitor Sync
         run: npx cap sync android
 
-      # 6️⃣ Setup Java 17
+      # 7️⃣ Setup Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 7️⃣ Install Android SDK 34 + Build Tools
+      # 8️⃣ Install Android SDK + Build Tools
       - name: Install Android SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # 8️⃣ Build signed APK
+      # 9️⃣ Build release APK
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # 9️⃣ Upload APK artifact
+      # 🔟 Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
