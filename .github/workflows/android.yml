@@ -10,44 +10,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js 22 (required for Capacitor 5)
+      # 2️⃣ Setup Node 22
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       # 3️⃣ Install project dependencies
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      # 4️⃣ Sync Capacitor Android
+      # 4️⃣ Install Capacitor Android (ensures BridgeActivity exists)
+      - name: Ensure Capacitor Android
+        run: npm install @capacitor/android@5
+
+      # 5️⃣ Build React frontend
+      - name: Build React
+        run: npm run build
+
+      # 6️⃣ Sync Capacitor Android
       - name: Capacitor Sync
         run: npx cap sync android
 
-      # 5️⃣ Setup Java 17 for Gradle
+      # 7️⃣ Setup Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 6️⃣ Install Android SDK 34 + build-tools
+      # 8️⃣ Install Android SDK 34 + Build Tools
       - name: Install Android SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # 7️⃣ Build release APK
+      # 9️⃣ Build signed APK
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew clean assembleRelease
+          ./gradlew assembleRelease
 
-      # 8️⃣ Upload generated APK
+      # 🔟 Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
