@@ -10,55 +10,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout your repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node 22 LTS
+      # 2️⃣ Setup Node.js 22 (required for Capacitor 5)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # 3️⃣ Install NPM dependencies
+      # 3️⃣ Install project dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Build React web app
-      - name: Build React
-        run: npm run build
-
-      # 5️⃣ Sync Capacitor Android project
+      # 4️⃣ Sync Capacitor Android
       - name: Capacitor Sync
         run: npx cap sync android
 
-      # 6️⃣ Setup Java 17
+      # 5️⃣ Setup Java 17 for Gradle
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 7️⃣ Install Android SDK & build tools
-      - name: Setup Android SDK
+      # 6️⃣ Install Android SDK 34 + build-tools
+      - name: Install Android SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      # 8️⃣ Build Signed APK
+      # 7️⃣ Build release APK
       - name: Build APK
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew clean
-          ./gradlew assembleRelease
+          ./gradlew clean assembleRelease
 
-      # 9️⃣ Upload the APK as artifact
+      # 8️⃣ Upload generated APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: joblink-release-apk
+          name: joblink-apk
           path: android/app/build/outputs/apk/release/app-release.apk
