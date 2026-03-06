@@ -10,57 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout repo
+      # 1. Checkout the repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node
-      - name: Setup Node
+      # 2. Setup Node (for Capacitor build)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18  # match your project Node version
 
-      # 3️⃣ Install npm dependencies
+      # 3. Install npm dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Build React frontend
-      - name: Build React
+      # 4. Build the web assets (React)
+      - name: Build Web Assets
         run: npm run build
 
-      # 5️⃣ Add Capacitor Android platform
-      - name: Capacitor Sync
-        run: npx cap sync android
-
-      # 6️⃣ Setup Java 17
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      # 5. Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
         with:
-          distribution: temurin
-          java-version: 17
+          api-level: 33
+          build-tools: 33.0.2
 
-      # 7️⃣ Install Android SDK + Build Tools
-      - name: Install Android SDK
+      # 6. Decode keystore from secrets
+      - name: Setup Android Keystore
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          mkdir -p android
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/joblink-release-key.jks
 
-      # 8️⃣ Decode keystore from GitHub secret
-      - name: Setup Keystore
-        run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/joblink-release-key.jks
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-
-      # 9️⃣ Build release APK
-      - name: Build APK
+      # 7. Build signed APK
+      - name: Build Release APK
         run: |
           cd android
-          chmod +x gradlew
+          chmod +x ./gradlew
           ./gradlew assembleRelease
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      # 🔟 Upload signed APK as artifact
+      # 8. Upload APK as artifact
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: joblink-apk
+          name: JobLink-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
