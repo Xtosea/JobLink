@@ -4,9 +4,7 @@ import { Capacitor } from "@capacitor/core";
 
 // Use proper API_BASE for APK vs Web
 const API_BASE =
-  Capacitor.getPlatform() === "web"
-    ? "http://localhost:5000"
-    : "https://joblinkbackend.onrender.com";
+ "https://joblinkbackend.onrender.com";
 
 // Full list of Nigerian job positions
 const JOB_POSITIONS_BY_TYPE = {
