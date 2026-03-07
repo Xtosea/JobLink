@@ -17,10 +17,7 @@ export default function ProofUpload() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // ================= API BASE =================
-  const apiBase =
-    Capacitor.getPlatform() === "web"
-      ? "http://localhost:5000"
-      : "https://joblinkbackend.onrender.com";
+  const apiBase = "https://joblinkbackend.onrender.com";
 
   // ================= FETCH APPLICATION =================
   useEffect(() => {
