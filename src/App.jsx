@@ -1,6 +1,7 @@
 // App.js
 import React, { useState } from "react";
-import { HashRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+
 // Applicant pages
 import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
@@ -14,6 +15,8 @@ import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Footer from "./components/Footer";
 
+import HashLink from "./components/HashLink";
+
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
 
@@ -23,54 +26,42 @@ export default function App() {
 
         {/* ================= NAVIGATION ================= */}
         <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
-          <Link to="/apply" className="underline">Apply</Link>
+          <HashLink to="/apply" className="underline">Apply</HashLink>
 
           {applicationToken && (
             <>
-              <Link to={`/upload/${applicationToken}`} className="underline">
+              <HashLink to={`/upload/${applicationToken}`} className="underline">
                 Upload Proof
-              </Link>
+              </HashLink>
 
-              <Link to={`/history/${applicationToken}`} className="underline">
+              <HashLink to={`/history/${applicationToken}`} className="underline">
                 History
-              </Link>
+              </HashLink>
             </>
           )}
 
-          <Link to="/about" className="underline">About Us</Link>
-          <Link to="/terms" className="underline">Terms And Conditions</Link>
+          <HashLink to="/about" className="underline">About Us</HashLink>
+          <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
 
         {/* ================= ROUTES ================= */}
         <div className="flex-grow">
           <Routes>
-            {/* Applicant Routes */}
-            <Route
-              path="/apply"
-              element={<ApplicantForm setApplicationToken={setApplicationToken} />}
-            />
-
+            <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
             <Route path="/upload/:token" element={<ProofUpload />} />
             <Route path="/history/:token" element={<HistoryPage />} />
 
-            {/* Admin Routes */}
             <Route path="/reply" element={<ReplyPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
 
-            {/* Static Pages */}
             <Route path="/about" element={<About />} />
             <Route path="/terms" element={<Terms />} />
 
-            {/* Default */}
-            <Route
-              path="/"
-              element={<ApplicantForm setApplicationToken={setApplicationToken} />}
-            />
+            <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
           </Routes>
         </div>
 
-        {/* ================= FOOTER ================= */}
         <Footer />
       </div>
     </Router>
