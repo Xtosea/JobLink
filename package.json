@@ -2,7 +2,7 @@
   "name": "joblink",
   "version": "1.0.0",
   "private": true,
-  "homepage": "./",
+  "homepage": "/",
   "description": "JobLink React + Capacitor app",
   "main": "index.js",
   "dependencies": {
