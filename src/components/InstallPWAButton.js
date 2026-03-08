@@ -2,19 +2,16 @@ import React, { useEffect, useState } from "react";
 
 export default function InstallPWAButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showButton, setShowButton] = useState(false);
+  const [showButton, setShowButton] = useState(true); // always show for demo
 
   useEffect(() => {
-    // Listen for the beforeinstallprompt event
     const handler = (e) => {
       e.preventDefault(); // Prevent automatic prompt
       setDeferredPrompt(e);
-      setShowButton(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Listen for appinstalled event to hide the button after installation
     const appInstalledHandler = () => {
       setShowButton(false);
       console.log("JobLink app installed");
@@ -28,16 +25,22 @@ export default function InstallPWAButton() {
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt(); // Show native install prompt
-    const choiceResult = await deferredPrompt.userChoice;
-    if (choiceResult.outcome === "accepted") {
-      console.log("User accepted the install prompt");
+    if (deferredPrompt) {
+      deferredPrompt.prompt(); // show native install prompt
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult.outcome === "accepted") {
+        console.log("User accepted the install prompt");
+      } else {
+        console.log("User dismissed the install prompt");
+      }
+      setDeferredPrompt(null);
     } else {
-      console.log("User dismissed the install prompt");
+      // fallback: manual info if no beforeinstallprompt
+      alert(
+        "To install JobLink, tap ⋮ in Chrome and select 'Add to Home screen'."
+      );
     }
-    setDeferredPrompt(null);
-    setShowButton(false); // Hide button after user interacts
+    setShowButton(false);
   };
 
   if (!showButton) return null;
