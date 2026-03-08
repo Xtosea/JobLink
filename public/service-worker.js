@@ -1,5 +1,10 @@
 const CACHE_NAME = "joblink-cache-v1";
-const urlsToCache = ["/", "/index.html"];
+
+const urlsToCache = [
+  "/",
+  "/logo192.png",
+  "/logo512.png"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
