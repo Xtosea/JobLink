@@ -5,16 +5,26 @@ export default function InstallPWAButton() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Listen for beforeinstallprompt event
+    // Listen for the beforeinstallprompt event
     const handler = (e) => {
       e.preventDefault(); // Prevent automatic prompt
       setDeferredPrompt(e);
-      setShowButton(true); // Show button
+      setShowButton(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    // Listen for appinstalled event to hide the button after installation
+    const appInstalledHandler = () => {
+      setShowButton(false);
+      console.log("JobLink app installed");
+    };
+    window.addEventListener("appinstalled", appInstalledHandler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", appInstalledHandler);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -27,7 +37,7 @@ export default function InstallPWAButton() {
       console.log("User dismissed the install prompt");
     }
     setDeferredPrompt(null);
-    setShowButton(false);
+    setShowButton(false); // Hide button after user interacts
   };
 
   if (!showButton) return null;
