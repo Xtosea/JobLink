@@ -103,9 +103,9 @@ export default function AdminDashboard() {
 
             <div className="mt-3 flex flex-wrap gap-4">
 
-              {app.resumeUrl && (
+              {app.resumeFile && (
                 <a
-                  href={app.resumeUrl}
+                  href={app.resumeFile}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 underline"
@@ -114,9 +114,9 @@ export default function AdminDashboard() {
                 </a>
               )}
 
-              {app.proofUrl && (
+              {app.proofFile && (
                 <a
-                  href={app.proofUrl}
+                  href={app.proofFile}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-green-600 underline"
