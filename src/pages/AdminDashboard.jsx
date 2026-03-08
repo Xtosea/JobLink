@@ -5,8 +5,8 @@ import { appHashLink } from "../utils/routes";
 export default function AdminDashboard() {
 
   const API =
-  process.env.REACT_APP_API_BASE ||
-  "https://joblinkbackend.onrender.com";
+  process.env.REACT_APP_API_URL ||
+  "https://joblinkbackend.onrender.com/api";
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
 
       setLoading(true);
 
-      const res = await axios.get(`${API}/api/applications`);
+      const res = await axios.get(`${API}/applications`);
 
       console.log("Applications API:", res.data);
 
