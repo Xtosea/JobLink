@@ -16,6 +16,7 @@ import Terms from "./pages/Terms";
 import Footer from "./components/Footer";
 
 import HashLink from "./components/HashLink";
+import InstallPWAButton from "./components/InstallPWAButton";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -60,6 +61,8 @@ export default function App() {
 
             <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
           </Routes>
+{/* Your existing App content */}
+      <InstallPWAButton />
         </div>
 
         <Footer />
