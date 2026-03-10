@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -15,8 +14,10 @@ import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Footer from "./components/Footer";
 
+// Components
 import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
+import AdBanner from "./components/AdBanner"; // Make sure you import it
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -24,6 +25,9 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 p-6 flex flex-col">
+
+        {/* ================= TOP AD ================= */}
+        <AdBanner position="top" />
 
         {/* ================= NAVIGATION ================= */}
         <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
@@ -61,9 +65,12 @@ export default function App() {
 
             <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
           </Routes>
-{/* Your existing App content */}
-      <InstallPWAButton />
+
+          <InstallPWAButton />
         </div>
+
+        {/* ================= BOTTOM AD ================= */}
+        <AdBanner position="bottom" />
 
         <Footer />
       </div>
