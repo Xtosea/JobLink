@@ -40,12 +40,7 @@ export default function App() {
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
 
-        {/* ================= HpfAd AFTER NAV ================= */}
-        <div className="max-w-4xl mx-auto w-full p-6 flex justify-center">
-          <HpfAd position="top" />
-        </div>
-
-        {/* ================= MAIN CONTENT ================= */}
+        
         <main className="flex-grow max-w-4xl mx-auto p-6 w-full flex flex-col gap-6">
           <Routes>
             <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
