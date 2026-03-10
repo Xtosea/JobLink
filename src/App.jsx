@@ -13,7 +13,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
-
+import AdBanner from "./components/AdBanner"; // Bottom ad
 
 
 import Footer from "./components/Footer";
@@ -67,6 +67,13 @@ export default function App() {
 {/* Your existing App content */}
       <InstallPWAButton />
         </div>
+
+     {/* ================= BOTTOM AD ================= */}
+        <div className="max-w-4xl mx-auto w-full p-6 flex flex-col items-center gap-6">
+          <AdBanner position="bottom" />
+        </div>
+
+
 
         <Footer />
       </div>
