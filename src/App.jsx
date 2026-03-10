@@ -69,7 +69,7 @@ export default function App() {
           <InstallPWAButton />
         </div>
 
-        {/* ================= BOTTOM AD ================= */}
+        {/* ================= Bottom AD ================= */}
         <AdBanner position="bottom" />
 
         <Footer />
