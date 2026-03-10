@@ -7,17 +7,16 @@ export default function HpfAd({ position }) {
 
     // Define global options
     window.atOptions = {
-      key: "0698f40cc0211ce2e04185b62213da66",
-      format: "iframe",
-      height: 60,
-      width: 320,
-      params: {}
-    };
-
+      'key' : 'b0720d2c534017e7cd46839c5a24c035',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
     // Add script dynamically
     const script = document.createElement("script");
     script.id = "hpf-script";
-    script.src = "https://www.highperformanceformat.com/0698f40cc0211ce2e04185b62213da66/invoke.js";
+    script.src = "https://www.highperformanceformat.com/b0720d2c534017e7cd46839c5a24c035/invoke.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
