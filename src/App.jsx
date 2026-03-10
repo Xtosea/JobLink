@@ -13,7 +13,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
-import AdBanner from "./components/AdBanner"; // Bottom a
+import AdBanner from "./components/AdBanner"; // Bottom ad
 
 
 import Footer from "./components/Footer";
