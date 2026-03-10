@@ -44,11 +44,17 @@ export default function App() {
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
 
-        {/* TOP AD */}
-        <div className="max-w-4xl mx-auto w-full flex justify-center">
-          <HpfAd position="top" />
-        </div>
+        flex justify-center">
+  <HpfAd position="top" />
+</div>
 
+<main className="flex-grow">
+  <Routes />
+</main>
+
+<div className="max-w-4xl mx-auto w-full flex justify-center">
+  <HpfAd position="bottom" />
+</div>
         {/* ROUTES */}
         <div className="flex-grow">
           <Routes>
@@ -71,7 +77,7 @@ export default function App() {
 
         {/* BOTTOM AD */}
         <div className="max-w-4xl mx-auto w-full flex justify-center">
-          <HpfAd position="bottom" />
+          <AdBanner position="bottom" />
         </div>
 
         <Footer />
