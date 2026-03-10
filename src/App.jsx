@@ -83,7 +83,6 @@ export default function App() {
   <AdBanner position="bottom" />
 </div>
 
-<Footer />
 
        <Footer />
       </div>
