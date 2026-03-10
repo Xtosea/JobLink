@@ -1,23 +1,21 @@
 import React, { useState } from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
-// Applicant pages
+// Pages
 import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
-
-// Admin pages
 import ReplyPage from "./pages/ReplyPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
-import Footer from "./components/Footer";
 
 // Components
+import Footer from "./components/Footer";
 import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
-import AdBanner from "./components/AdBanner"; // Make sure you import it
+import AdBanner from "./components/AdBanner"; // Import your AdBanner
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -25,9 +23,6 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 p-6 flex flex-col">
-
-        {/* ================= TOP AD ================= */}
-        <AdBanner position="top" />
 
         {/* ================= NAVIGATION ================= */}
         <nav className="max-w-4xl mx-auto flex flex-wrap gap-4 mb-6">
@@ -38,7 +33,6 @@ export default function App() {
               <HashLink to={`/upload/${applicationToken}`} className="underline">
                 Upload Proof
               </HashLink>
-
               <HashLink to={`/history/${applicationToken}`} className="underline">
                 History
               </HashLink>
@@ -49,29 +43,27 @@ export default function App() {
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
 
-        {/* ================= ROUTES ================= */}
+        {/* ================= MAIN CONTENT ================= */}
         <div className="flex-grow">
           <Routes>
             <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
             <Route path="/upload/:token" element={<ProofUpload />} />
             <Route path="/history/:token" element={<HistoryPage />} />
-
             <Route path="/reply" element={<ReplyPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
-
             <Route path="/about" element={<About />} />
             <Route path="/terms" element={<Terms />} />
-
             <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
           </Routes>
 
           <InstallPWAButton />
         </div>
 
-        {/* ================= Bottom AD ================= */}
+        {/* ================= BOTTOM AD ================= */}
         <AdBanner position="bottom" />
 
+        {/* ================= FOOTER ================= */}
         <Footer />
       </div>
     </Router>
