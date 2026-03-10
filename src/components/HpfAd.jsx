@@ -10,7 +10,7 @@ export default function HpfAd({ position }) {
       key: "0698f40cc0211ce2e04185b62213da66",
       format: "iframe",
       height: 60,
-      width: 468,
+      width: 320,
       params: {}
     };
 
