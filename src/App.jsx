@@ -20,7 +20,7 @@ import Footer from "./components/Footer";
 
 import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
-import HpfAd from "./components/HpfAd";
+
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
