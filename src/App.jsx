@@ -55,45 +55,32 @@ export default function App() {
   <HpfAd position="top" />
 </div>
 
-<main className="flex-grow">
-  <Routes />
-</main>
+{/* ================= ROUTES ================= */}
+<div className="flex-grow">
+  <Routes>
+    <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
+    <Route path="/upload/:token" element={<ProofUpload />} />
+    <Route path="/history/:token" element={<HistoryPage />} />
+
+    <Route path="/reply" element={<ReplyPage />} />
+    <Route path="/admin/login" element={<AdminLogin />} />
+    <Route path="/admin" element={<AdminDashboard />} />
+
+    <Route path="/about" element={<About />} />
+    <Route path="/terms" element={<Terms />} />
+
+    <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
+  </Routes>
+
+  <InstallPWAButton />
+</div>
 
 <div className="max-w-4xl mx-auto w-full flex justify-center">
   <HpfAd position="bottom" />
 </div>
 
+<div className="max-w-4xl mx-auto w-full p-6 flex flex-col items-center gap-6">
+  <AdBanner position="bottom" />
+</div>
+
 <Footer />
-
-        {/* ================= ROUTES ================= */}
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
-            <Route path="/upload/:token" element={<ProofUpload />} />
-            <Route path="/history/:token" element={<HistoryPage />} />
-
-            <Route path="/reply" element={<ReplyPage />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-
-            <Route path="/about" element={<About />} />
-            <Route path="/terms" element={<Terms />} />
-
-            <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
-          </Routes>
-{/* Your existing App content */}
-      <InstallPWAButton />
-        </div>
-
-     {/* ================= BOTTOM AD ================= */}
-        <div className="max-w-4xl mx-auto w-full p-6 flex flex-col items-center gap-6">
-          <AdBanner position="bottom" />
-        </div>
-
-
-
-        <Footer />
-      </div>
-    </Router>
-  );
-}
