@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -44,18 +43,12 @@ export default function App() {
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
 
-        flex justify-center">
-  <HpfAd position="top" />
-</div>
+        {/* TOP AD */}
+        <div className="max-w-4xl mx-auto w-full flex justify-center">
+          <HpfAd position="top" />
+        </div>
 
-<main className="flex-grow">
-  <Routes />
-</main>
-
-<div className="max-w-4xl mx-auto w-full flex justify-center">
-  <HpfAd position="bottom" />
-</div>
-        {/* ROUTES */}
+        {/* MAIN CONTENT */}
         <div className="flex-grow">
           <Routes>
             <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
@@ -80,7 +73,9 @@ export default function App() {
           <AdBanner position="bottom" />
         </div>
 
+        {/* FOOTER */}
         <Footer />
+
       </div>
     </Router>
   );
