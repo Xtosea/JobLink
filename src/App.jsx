@@ -65,7 +65,10 @@ export default function App() {
           <InstallPWAButton />
         </main>
 
-        
+        {/* ================= BOTTOM AD ================= */}
+        <div className="max-w-4xl mx-auto w-full p-6 flex flex-col items-center gap-6">
+          <AdBanner position="bottom" />
+        </div>
 
         {/* ================= FOOTER ================= */}
         <Footer />
