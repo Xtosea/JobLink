@@ -20,6 +20,7 @@ import Footer from "./components/Footer";
 
 import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
+import HpfAd from "./components/HpfAd";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -47,6 +48,13 @@ export default function App() {
           <HashLink to="/about" className="underline">About Us</HashLink>
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
         </nav>
+
+{/* ================= HpfAd AFTER NAV ================= */}
+        <div className="max-w-4xl mx-auto w-full p-6 flex justify-center">
+          <HpfAd position="top" />
+        </div>
+
+        {/* ================= MAIN CONTENT ================= */}
 
         {/* ================= ROUTES ================= */}
         <div className="flex-grow">
