@@ -45,6 +45,20 @@ export default function App() {
 
         <nav>...</nav>
 
+
+<div className="max-w-4xl mx-auto w-full flex justify-center">
+  <HpfAd position="top" />
+</div>
+
+<main className="flex-grow">
+  <Routes />
+</main>
+
+<div className="max-w-4xl mx-auto w-full flex justify-center">
+  <HpfAd position="bottom" />
+</div>
+
+
 <div className="max-w-4xl mx-auto w-full flex justify-center">
   <HpfAd position="top" />
 </div>
@@ -79,8 +93,8 @@ export default function App() {
           <InstallPWAButton />
         </div>
 
-        {/* BOTTOM AD */}
-        <div className="max-w-4xl mx-auto w-full flex justify-center">
+        {/* ================= BOTTOM AD ================= */}
+        <div className="max-w-4xl mx-auto w-full p-6 flex flex-col items-center gap-6">
           <AdBanner position="bottom" />
         </div>
 
