@@ -8,8 +8,8 @@ export default function HpfAd({ position }) {
     window.atOptions = {
       key: "b0720d2c534017e7cd46839c5a24c035",
       format: "iframe",
-      height: 50,
-      width: 320,
+      height: 100,
+      width: 340,
       params: {}
     };
 
