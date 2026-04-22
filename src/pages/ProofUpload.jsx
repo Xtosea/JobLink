@@ -18,6 +18,8 @@ export default function ProofUpload() {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+console.log("ENV CHECK:", import.meta.env);
+
   // ================= API BASE =================
   const apiBase = "https://joblinkbackend.onrender.com";
 
