@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { appHashLink } from "../utils/routes";
@@ -20,14 +20,20 @@ export default function AdminDashboard() {
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  // Notifications
+  // Notifications (REAL backend)
   const [notifications, setNotifications] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
 
+  // 🔊 SOUND
+  const notificationSound = new Audio("/sounds/notify.mp3");
+  const prevNotifCount = useRef(0);
+
   useEffect(() => {
     fetchApplications();
+    fetchNotifications();
   }, []);
 
+  // FETCH APPLICATIONS
   const fetchApplications = async () => {
     try {
       setLoading(true);
@@ -40,9 +46,7 @@ export default function AdminDashboard() {
         data = res.data.applications;
       }
 
-      if (!Array.isArray(data)) {
-        data = [];
-      }
+      if (!Array.isArray(data)) data = [];
 
       setApplications(data);
 
@@ -54,34 +58,51 @@ export default function AdminDashboard() {
     }
   };
 
-  // Logout
+  // FETCH NOTIFICATIONS (WITH SOUND)
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get(`${API}/notifications`);
+
+      const newData = res.data.notifications;
+
+      // 🔔 PLAY SOUND IF NEW NOTIFICATION ARRIVES
+      if (newData.length > prevNotifCount.current) {
+        notificationSound.play().catch(() => {});
+      }
+
+      prevNotifCount.current = newData.length;
+
+      setNotifications(newData);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // AUTO REFRESH NOTIFICATIONS
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 5000); // every 5 sec
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
   };
 
-  // Add notification
-  const addNotification = (message) => {
-    const newNotif = {
-      id: Date.now(),
-      message,
-      time: new Date().toLocaleTimeString(),
-      read: false,
-    };
-
-    setNotifications((prev) => [newNotif, ...prev]);
-  };
-
-  // Update status
+  // UPDATE STATUS (backend handles email + whatsapp + sms)
   const updateStatus = async (id, status) => {
     try {
       await axios.patch(`${API}/applications/${id}/status`, {
         status
       });
 
-      addNotification(`Status changed to "${status}"`);
-
       fetchApplications();
+      fetchNotifications();
 
     } catch (error) {
       console.error(error);
@@ -89,7 +110,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Filter + Search
+  // FILTER + SEARCH
   const filteredApplications = applications.filter((app) => {
 
     const matchesStatus =
@@ -136,7 +157,7 @@ export default function AdminDashboard() {
 
         <div className="flex items-center gap-4">
 
-          {/* Notifications */}
+          {/* NOTIFICATIONS */}
           <div className="relative">
 
             <button
@@ -163,10 +184,10 @@ export default function AdminDashboard() {
                   <p className="p-2 text-sm text-gray-500">No notifications</p>
                 ) : (
                   notifications.map((n) => (
-                    <div key={n.id} className="p-2 border-b text-sm">
+                    <div key={n._id || n.id} className="p-2 border-b text-sm">
                       <p>{n.message}</p>
                       <span className="text-xs text-gray-400">
-                        {n.time}
+                        {formatDate(n.createdAt)}
                       </span>
                     </div>
                   ))
@@ -177,12 +198,12 @@ export default function AdminDashboard() {
 
           </div>
 
-          {/* Total */}
+          {/* TOTAL */}
           <div className="bg-gray-100 px-3 py-1 rounded">
             Total: <b>{totalApplicants}</b>
           </div>
 
-          {/* Logout */}
+          {/* LOGOUT */}
           <button
             onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded"
@@ -229,7 +250,7 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* RESULT COUNT */}
+      {/* COUNT */}
       <p className="text-sm text-gray-600 mb-4">
         Showing {current.length} of {filteredApplications.length}
       </p>
