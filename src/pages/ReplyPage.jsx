@@ -52,7 +52,10 @@ export default function ReplyPage() {
     if (!reply) return alert("Reply cannot be empty");
 
     try {
-      await replyToApplication(id, { reply, status: "Replied" }, token);
+      await axios.patch(`${API}/applications/${id}/status`, {
+  reply,
+  status: "Replied"
+});
       alert("Reply saved successfully");
       fetchApps();
     } catch (err) {
