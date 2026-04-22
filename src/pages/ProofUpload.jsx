@@ -53,8 +53,7 @@ console.log("ENV CHECK:", import.meta.env);
       const formData = new FormData();
 
       formData.append("file", file);
-      formData.append("upload_preset", "joblink_unsigned");
-
+    formData.append("upload_preset", "joblink_unsigned");
         process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
       const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
 
