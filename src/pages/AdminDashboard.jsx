@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  // Notifications (REAL backend)
+  // Notifications
   const [notifications, setNotifications] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
 
@@ -58,20 +58,18 @@ export default function AdminDashboard() {
     }
   };
 
-  // FETCH NOTIFICATIONS (WITH SOUND)
+  // FETCH NOTIFICATIONS
   const fetchNotifications = async () => {
     try {
+
       const res = await axios.get(`${API}/notifications`);
+      const newData = res.data.notifications || [];
 
-      const newData = res.data.notifications;
-
-      // 🔔 PLAY SOUND IF NEW NOTIFICATION ARRIVES
       if (newData.length > prevNotifCount.current) {
         notificationSound.play().catch(() => {});
       }
 
       prevNotifCount.current = newData.length;
-
       setNotifications(newData);
 
     } catch (err) {
@@ -79,11 +77,11 @@ export default function AdminDashboard() {
     }
   };
 
-  // AUTO REFRESH NOTIFICATIONS
+  // AUTO REFRESH
   useEffect(() => {
     const interval = setInterval(() => {
       fetchNotifications();
-    }, 5000); // every 5 sec
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -94,9 +92,10 @@ export default function AdminDashboard() {
     navigate("/admin/login");
   };
 
-  // UPDATE STATUS (backend handles email + whatsapp + sms)
+  // UPDATE STATUS
   const updateStatus = async (id, status) => {
     try {
+
       await axios.patch(`${API}/applications/${id}/status`, {
         status
       });
@@ -110,7 +109,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // FILTER + SEARCH
+  // FILTER
   const filteredApplications = applications.filter((app) => {
 
     const matchesStatus =
@@ -181,10 +180,12 @@ export default function AdminDashboard() {
                 </div>
 
                 {notifications.length === 0 ? (
-                  <p className="p-2 text-sm text-gray-500">No notifications</p>
+                  <p className="p-2 text-sm text-gray-500">
+                    No notifications
+                  </p>
                 ) : (
                   notifications.map((n) => (
-                    <div key={n._id || n.id} className="p-2 border-b text-sm">
+                    <div key={n._id} className="p-2 border-b text-sm">
                       <p>{n.message}</p>
                       <span className="text-xs text-gray-400">
                         {formatDate(n.createdAt)}
@@ -250,7 +251,6 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* COUNT */}
       <p className="text-sm text-gray-600 mb-4">
         Showing {current.length} of {filteredApplications.length}
       </p>
@@ -260,26 +260,39 @@ export default function AdminDashboard() {
 
         {current.map((app) => (
 
-          <div key={app._id} className="border p-4 rounded shadow">
+          <div
+            key={app._id || app.token}
+            className="border p-4 rounded shadow bg-white"
+          >
 
-            <h2 className="font-bold">{app.fullname}</h2>
-            <p>{app.email}</p>
-            <p>{app.jobPosition}</p>
+            <h2 className="font-bold text-lg">
+              {app.fullname || "Unknown"}
+            </h2>
+
+            <p>Email: {app.email}</p>
+            <p>Position: {app.jobPosition}</p>
 
             <p className="text-sm text-gray-500">
               Applied: {formatDate(app.createdAt)}
             </p>
 
+            {/* STATUS */}
             <div className="mt-2">
 
-              <span className={`px-2 py-1 text-white rounded ${statusColor[app.status] || "bg-gray-400"}`}>
+              <span
+                className={`px-2 py-1 text-white rounded ${
+                  statusColor[app.status] || "bg-gray-400"
+                }`}
+              >
                 {app.status || "Pending"}
               </span>
 
               <select
                 className="border ml-2 p-1"
                 value={app.status || "Pending"}
-                onChange={(e) => updateStatus(app._id, e.target.value)}
+                onChange={(e) =>
+                  updateStatus(app._id, e.target.value)
+                }
               >
                 <option>Pending</option>
                 <option>Processing</option>
@@ -290,6 +303,47 @@ export default function AdminDashboard() {
 
             </div>
 
+            {/* LINKS */}
+            <div className="mt-3 flex flex-wrap gap-4">
+
+              {app.resumeFile && (
+                <a
+                  href={app.resumeFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  View Resume
+                </a>
+              )}
+
+              {app.proofFile && (
+                <a
+                  href={app.proofFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600 underline"
+                >
+                  View Payment Proof
+                </a>
+              )}
+
+              <a
+                href={appHashLink(`/reply?token=${app.token}`)}
+                className="text-purple-600 underline"
+              >
+                Reply
+              </a>
+
+              <a
+                href={appHashLink(`/history/${app.token}`)}
+                className="text-gray-700 underline"
+              >
+                History
+              </a>
+
+            </div>
+
           </div>
 
         ))}
@@ -297,21 +351,27 @@ export default function AdminDashboard() {
       </div>
 
       {/* PAGINATION */}
-      <div className="flex gap-2 mt-6">
+      {totalPages > 1 && (
+        <div className="flex gap-2 mt-6 flex-wrap">
 
-        {Array.from({ length: totalPages }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setPage(i + 1)}
-            className={`px-3 py-1 border rounded ${
-              page === i + 1 ? "bg-black text-white" : ""
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
+          {Array.from({ length: totalPages }).map((_, i) => (
 
-      </div>
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-3 py-1 border rounded ${
+                page === i + 1
+                  ? "bg-black text-white"
+                  : "bg-white"
+              }`}
+            >
+              {i + 1}
+            </button>
+
+          ))}
+
+        </div>
+      )}
 
     </div>
   );
