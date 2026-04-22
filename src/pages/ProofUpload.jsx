@@ -60,10 +60,7 @@ console.log("ENV CHECK:", import.meta.env);
 
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
-      xhr.open(
-  "POST",
-  `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
-);
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
