@@ -96,18 +96,21 @@ export default function AdminDashboard() {
   const updateStatus = async (id, status) => {
     try {
 
-      await axios.patch(`${API}/applications/${id}/status`, {
-        status
-      });
+      const updateStatus = async (id, status, reply = "") => {
+  try {
+    await axios.patch(`${API}/applications/${id}/status`, {
+      status,
+      reply, // 🔥 include reply
+    });
 
-      fetchApplications();
-      fetchNotifications();
+    fetchApplications();
+    fetchNotifications();
 
-    } catch (error) {
-      console.error(error);
-      alert("Failed to update status");
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Failed to update status");
+  }
+};
 
   // FILTER
   const filteredApplications = applications.filter((app) => {
