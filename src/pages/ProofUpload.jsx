@@ -57,7 +57,10 @@ console.log("ENV CHECK:", import.meta.env);
         process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
       const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
 
-      xhr.open("POST", "https://api.cloudinary.com/v1_1/djt1zq25a/auto/upload");
+      xhr.open(
+      "POST",
+      "https://api.cloudinary.com/v1_1/djt1zq25a/auto/upload"
+    );
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
