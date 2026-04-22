@@ -62,7 +62,7 @@ export default function App() {
     <Route path="/upload/:token" element={<ProofUpload />} />
     <Route path="/history/:token" element={<HistoryPage />} />
 
-    <Route path="/admin/reply" element={<ReplyPage />} />
+    <Route path="/reply" element={<ReplyPage />} />
     <Route path="/admin/login" element={<AdminLogin />} />
     <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
