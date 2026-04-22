@@ -14,7 +14,7 @@ export default function AdminLogin() {
     try {
       const res = await adminLogin({ email, password }); // ✅ clean API call
       login(res.data.token); // store JWT
-      navigate("/admin");
+      navigate("/admin/dashboard");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
