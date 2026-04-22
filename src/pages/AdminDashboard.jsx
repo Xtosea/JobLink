@@ -93,14 +93,11 @@ export default function AdminDashboard() {
   };
 
   // UPDATE STATUS
-  const updateStatus = async (id, status) => {
-    try {
-
-      const updateStatus = async (id, status, reply = "") => {
+const updateStatus = async (id, status, reply = "") => {
   try {
     await axios.patch(`${API}/applications/${id}/status`, {
       status,
-      reply, // 🔥 include reply
+      reply, // include reply if needed
     });
 
     fetchApplications();
