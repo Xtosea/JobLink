@@ -62,8 +62,10 @@ console.log("ENV CHECK:", import.meta.env);
 
       xhr.open(
         "POST",
-        `https://api.cloudinary.com/v1_1/${cloudName}/upload`
-      );
+        `xhr.open(
+  "POST",
+  `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
+);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
