@@ -61,8 +61,6 @@ console.log("ENV CHECK:", import.meta.env);
       const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
       xhr.open(
-        "POST",
-        `xhr.open(
   "POST",
   `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
 );
