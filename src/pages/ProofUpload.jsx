@@ -2,17 +2,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Capacitor } from "@capacitor/core";
 
 export default function ProofUpload() {
   const { token: rawToken } = useParams();
-  // handle links coming from email or web / APK
   const token = rawToken?.split("/").pop();
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
   const [proofFile, setProofFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
+
+  const [proofPreview, setProofPreview] = useState(null);
+  const [resumePreview, setResumePreview] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -30,7 +32,15 @@ export default function ProofUpload() {
         alert("Invalid or expired link");
         navigate("/");
       });
-  }, [token, apiBase, navigate]);
+  }, [token, navigate]);
+
+  // ================= CLEANUP PREVIEW =================
+  useEffect(() => {
+    return () => {
+      if (proofPreview) URL.revokeObjectURL(proofPreview);
+      if (resumePreview) URL.revokeObjectURL(resumePreview);
+    };
+  }, [proofPreview, resumePreview]);
 
   // ================= UPLOAD TO CLOUDINARY =================
   const uploadToCloudinary = (file, onProgress) => {
@@ -41,10 +51,17 @@ export default function ProofUpload() {
       const formData = new FormData();
 
       formData.append("file", file);
-      formData.append("upload_preset", process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+      formData.append(
+        "upload_preset",
+        import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+      );
 
-      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`);
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+      xhr.open(
+        "POST",
+        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`
+      );
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
@@ -55,6 +72,7 @@ export default function ProofUpload() {
 
       xhr.onload = () => {
         let response;
+
         try {
           response = JSON.parse(xhr.responseText);
         } catch {
@@ -62,33 +80,53 @@ export default function ProofUpload() {
         }
 
         if (xhr.status !== 200 || !response.secure_url) {
-          return reject(new Error(response.error?.message || "Upload failed"));
+          return reject(
+            new Error(response.error?.message || "Upload failed")
+          );
         }
 
         resolve(response.secure_url);
       };
 
-      xhr.onerror = () => reject(new Error("Network error during upload"));
+      xhr.onerror = () =>
+        reject(new Error("Network error during upload"));
+
       xhr.send(formData);
     });
   };
 
-  // ================= HANDLE FORM SUBMIT =================
+  // ================= HANDLE SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!proofFile || !resumeFile) return alert("Please select both files");
+
+    if (!proofFile || !resumeFile) {
+      return alert("Please select both files");
+    }
 
     try {
       setLoading(true);
       setUploadProgress(0);
 
-      const proofUrl = await uploadToCloudinary(proofFile, (p) => setUploadProgress(Math.round(p / 2)));
-      const resumeUrl = await uploadToCloudinary(resumeFile, (p) => setUploadProgress(50 + Math.round(p / 2)));
+      const proofUrl = await uploadToCloudinary(
+        proofFile,
+        (p) => setUploadProgress(Math.round(p / 2))
+      );
 
-      const res = await axios.post(`${apiBase}/api/applications/upload/cloud/${token}`, { proofUrl, resumeUrl });
+      const resumeUrl = await uploadToCloudinary(
+        resumeFile,
+        (p) =>
+          setUploadProgress(50 + Math.round(p / 2))
+      );
+
+      const res = await axios.post(
+        `${apiBase}/api/applications/upload/cloud/${token}`,
+        { proofUrl, resumeUrl }
+      );
 
       alert("Files uploaded successfully!");
+
       navigate(`/history/${res.data.publicToken}`);
+
     } catch (err) {
       console.error(err);
       alert("Upload failed. Please try again");
@@ -98,65 +136,190 @@ export default function ProofUpload() {
     }
   };
 
-  // ================= LOADING / FALLBACK =================
-  if (!application) return <p className="text-center mt-10">Loading...</p>;
+  // ================= LOADING =================
+  if (!application)
+    return (
+      <p className="text-center mt-10">
+        Loading...
+      </p>
+    );
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow mt-10">
-      <h2 className="text-xl font-bold mb-4 text-center">Upload Proof & CV</h2>
+
+      <h2 className="text-xl font-bold mb-4 text-center">
+        Upload Proof & CV
+      </h2>
 
       <p className="mb-4 text-gray-700">
-        Hello <strong>{application.fullname}</strong>, upload your{" "}
-        <strong>Proof of Payment</strong> and <strong>Resume/CV</strong> for{" "}
+        Hello <strong>{application.fullname}</strong>,
+        upload your <strong>Proof of Payment</strong> and{" "}
+        <strong>Resume/CV</strong> for{" "}
         <strong>{application.jobPosition}</strong>.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+
+        {/* ================= PROOF ================= */}
         <div>
-          <label className="block font-medium mb-1">Proof of Payment</label>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) => setProofFile(e.target.files[0])}
-            required
-          />
+          <label className="block font-medium mb-1">
+            Proof of Payment
+          </label>
+
+          <div className="flex gap-2 mb-2">
+            {/* CAMERA */}
+            <label className="bg-blue-600 text-white px-3 py-1 rounded cursor-pointer">
+              📷 Take Photo
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setProofFile(file);
+                  setProofPreview(
+                    URL.createObjectURL(file)
+                  );
+                }}
+              />
+            </label>
+
+            {/* FILE */}
+            <label className="bg-gray-600 text-white px-3 py-1 rounded cursor-pointer">
+              📁 Choose File
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setProofFile(file);
+                  setProofPreview(
+                    URL.createObjectURL(file)
+                  );
+                }}
+              />
+            </label>
+          </div>
+
+          {/* PREVIEW */}
+          {proofPreview && (
+            <div className="mt-2">
+              {proofFile?.type?.includes("image") ? (
+                <img
+                  src={proofPreview}
+                  alt="Preview"
+                  className="rounded shadow"
+                />
+              ) : (
+                <a
+                  href={proofPreview}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  Preview Document
+                </a>
+              )}
+
+              <button
+                type="button"
+                className="text-red-500 block mt-1"
+                onClick={() => {
+                  setProofFile(null);
+                  setProofPreview(null);
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* ================= RESUME ================= */}
         <div>
-          <label className="block font-medium mb-1">Resume / CV</label>
+          <label className="block font-medium mb-1">
+            Resume / CV
+          </label>
+
           <input
             type="file"
             accept=".pdf,.doc,.docx"
-            onChange={(e) => setResumeFile(e.target.files[0])}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setResumeFile(file);
+              setResumePreview(
+                URL.createObjectURL(file)
+              );
+            }}
             required
           />
+
+          {resumePreview && (
+            <div className="mt-2">
+              <a
+                href={resumePreview}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 underline"
+              >
+                Preview Resume
+              </a>
+
+              <button
+                type="button"
+                className="text-red-500 block"
+                onClick={() => {
+                  setResumeFile(null);
+                  setResumePreview(null);
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* ================= PROGRESS ================= */}
         {loading && (
           <>
             <div className="w-full bg-gray-200 rounded h-3 overflow-hidden">
               <div
-                className="h-3 bg-green-600 transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
+                className="h-3 bg-green-600 transition-all"
+                style={{
+                  width: `${uploadProgress}%`,
+                }}
               />
             </div>
-            <p className="text-sm text-center mt-1">Uploading... {uploadProgress}%</p>
+
+            <p className="text-sm text-center">
+              Uploading... {uploadProgress}%
+            </p>
           </>
         )}
 
+        {/* ================= SUBMIT ================= */}
         <button
           disabled={loading}
-          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 transition"
+          className="w-full p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
         >
-          {loading ? "Uploading..." : "Upload Files"}
+          {loading
+            ? "Uploading..."
+            : "Upload Files"}
         </button>
 
         <label className="text-sm mt-2 block">
-          <input type="checkbox" required /> I agree to the{" "}
-          <a href="/terms" className="text-green-600 underline">
+          <input type="checkbox" required /> I agree
+          to the{" "}
+          <a
+            href="/terms"
+            className="text-green-600 underline"
+          >
             Terms & Conditions
           </a>
         </label>
+
       </form>
     </div>
   );
