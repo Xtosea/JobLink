@@ -60,7 +60,7 @@ export default function ProofUpload() {
 
       xhr.open(
         "POST",
-        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`
+        `https://api.cloudinary.com/v1_1/${cloudName}/upload`
       );
 
       xhr.upload.onprogress = (event) => {
