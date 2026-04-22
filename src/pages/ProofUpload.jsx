@@ -55,10 +55,8 @@ console.log("ENV CHECK:", import.meta.env);
       formData.append("file", file);
       formData.append(
         "upload_preset",
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-      );
-
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+        process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
 
       xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`);
 
