@@ -50,17 +50,15 @@ console.log("ENV CHECK:", import.meta.env);
       if (!file) return reject(new Error("No file provided"));
 
       const xhr = new XMLHttpRequest();
-      const formData = new FormData();
+const formData = new FormData();
 
-      formData.append("file", file);
-    formData.append("upload_preset", "joblink_unsigned");
-        process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
-      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+formData.append("file", file);
+formData.append("upload_preset", "joblink_unsigned");
 
-      xhr.open(
-      "POST",
-      "https://api.cloudinary.com/v1_1/djt1zq25a/auto/upload"
-    );
+xhr.open(
+  "POST",
+  "https://api.cloudinary.com/v1_1/djt1zq25a/auto/upload"
+);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
