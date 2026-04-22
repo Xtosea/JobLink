@@ -55,7 +55,7 @@ console.log("ENV CHECK:", import.meta.env);
       formData.append("file", file);
     formData.append("upload_preset", "joblink_unsigned");
         process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
-      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME
+      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
 
       xhr.open("POST", "https://api.cloudinary.com/v1_1/djt1zq25a/auto/upload");
 
