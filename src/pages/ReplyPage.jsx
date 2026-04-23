@@ -63,13 +63,14 @@ export default function ReplyPage() {
   };
 
   const resendEmail = async (id) => {
-    try {
-      await resendApplicationEmail(id, token);
-      alert("Email resent successfully");
-    } catch (err) {
-      alert("Failed to resend email");
-    }
-  };
+  try {
+    await resendApplicationEmail(id, token);
+    alert("Email resent successfully");
+  } catch (err) {
+    console.error(err.response?.data || err.message); // 👈 VERY IMPORTANT
+    alert("Failed to resend email");
+  }
+};
 
   // Pagination
   const totalPages = Math.ceil(apps.length / pageSize);
