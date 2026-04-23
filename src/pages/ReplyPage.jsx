@@ -67,9 +67,9 @@ export default function ReplyPage() {
     await resendApplicationEmail(id, token);
     alert("Email resent successfully");
   } catch (err) {
-    console.error(err.response?.data || err.message); // 👈 VERY IMPORTANT
-    alert("Failed to resend email");
-  }
+  console.error("FULL ERROR:", err.response?.data || err.message);
+  alert(err.response?.data?.message || "Failed to resend email");
+}
 };
 
   // Pagination
