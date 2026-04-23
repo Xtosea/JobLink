@@ -21,6 +21,6 @@ export const replyToApplication = (id, data, token) =>
   });
 
 export const resendApplicationEmail = (id, token) =>
-  axios.patch(`${API_BASE}/admin/applications/resend/${id}`, {}, {
+  axios.patch(`${API_BASE}/applications/resend/${id}`, {}, {
     headers: { Authorization: `Bearer ${token}` },
   });
