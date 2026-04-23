@@ -33,6 +33,6 @@ export const replyToApplication = (id, payload, token) =>
 
 // ✅ Resend application email (Admin)
 export const resendApplicationEmail = (id, token) =>
-  API.patch(`/applications/resend/${id}`, null, {
+  API.post(`/applications/resend/${id}`, null, {
     headers: { Authorization: `Bearer ${token}` },
   });
