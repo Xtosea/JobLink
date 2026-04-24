@@ -6,14 +6,14 @@ export default function History() {
   const { token } = useParams();
   const [application, setApplication] = useState(null);
 
- const API_BASE = "https://joblinkbackend.onrender.com";
-
+  const API_BASE = "https://joblinkbackend.onrender.com";
 
   useEffect(() => {
-    axios.get(`${API}/applications/history/${token}`)
+    axios
+      .get(`${API_BASE}/api/applications/history/${token}`)
       .then((res) => setApplication(res.data))
       .catch(() => alert("Invalid history link"));
-  }, [token, API_BASE]);
+  }, [token]);
 
   if (!application) return <p className="text-center">Loading...</p>;
 
