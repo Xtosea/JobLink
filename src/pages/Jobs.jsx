@@ -33,10 +33,10 @@ export default function Jobs() {
             </p>
 
             {job.salary && (
-              <p className="text-green-600 font-semibold mt-1">
-                💰 {job.salary}
-              </p>
-            )}
+  <p className="text-green-600 font-semibold mt-1">
+    💰 {job.salary}
+  </p>
+)}
 
             {job.isFeatured && (
               <span className="text-yellow-500 text-sm">
