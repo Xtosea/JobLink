@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Button } from "react-native";
-
 
 export default function Jobs() {
-  const API = "http://localhost:5000/api";
+  const API = "https://joblinkbackend.onrender.com/api";
 
   const [jobs, setJobs] = useState([]);
 
@@ -24,12 +22,7 @@ export default function Jobs() {
 
       {jobs.map((job) => (
         <Link key={job._id} to={`/jobs/${job._id}`}>
-
-   Button
-  title="Browse Jobs"
-  onPress={() => navigation.navigate("Jobs")}
-/>
-          <div className="border p-3 mb-3 rounded cursor-pointer">
+          <div className="border p-3 mb-3 rounded cursor-pointer hover:shadow">
             <h3 className="font-bold">{job.title}</h3>
             <p>{job.company}</p>
 
