@@ -280,6 +280,6 @@ export default function ApplicantForm() {
       </form>
     </div>
   </div>
-  </div>
+  
   );
 }
