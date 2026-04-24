@@ -14,7 +14,7 @@ export default function History() {
     axios.get(`${API}/applications/history/${token}`)
       .then((res) => setApplication(res.data))
       .catch(() => alert("Invalid history link"));
-  }, [token, apiBase]);
+  }, [token, API_BASE]);
 
   if (!application) return <p className="text-center">Loading...</p>;
 
