@@ -17,27 +17,34 @@ export default function Jobs() {
   }, []);
 
   return (
-    <div className="border p-4 mb-4 rounded hover:shadow bg-white">
-  <h3 className="font-bold text-lg">{job.title}</h3>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Available Jobs</h2>
 
-  <p className="text-gray-600">{job.company}</p>
+      {jobs.map((job) => (
+        <Link key={job._id} to={`/jobs/${job._id}`}>
+          <div className="border p-4 mb-4 rounded hover:shadow bg-white cursor-pointer">
 
-  <p className="text-sm text-gray-500">
-    📍 {job.location} • {job.jobType}
-  </p>
+            <h3 className="font-bold text-lg">{job.title}</h3>
 
-  {job.salary && (
-    <p className="text-green-600 font-semibold mt-1">
-      💰 {job.salary}
-    </p>
-  )}
+            <p className="text-gray-600">{job.company}</p>
 
-  {job.isFeatured && (
-    <span className="text-yellow-500 text-sm">
-      🔥 Featured
-    </span>
-  )}
-</div>
+            <p className="text-sm text-gray-500">
+              📍 {job.location} • {job.jobType}
+            </p>
+
+            {job.salary && (
+              <p className="text-green-600 font-semibold mt-1">
+                💰 {job.salary}
+              </p>
+            )}
+
+            {job.isFeatured && (
+              <span className="text-yellow-500 text-sm">
+                🔥 Featured
+              </span>
+            )}
+
+          </div>
         </Link>
       ))}
     </div>
