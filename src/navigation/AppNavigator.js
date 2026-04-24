@@ -3,6 +3,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../pages/Home";
 import About from "../pages/About";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
+import Jobs from "../pages/Jobs";
+import JobDetails from "../pages/JobDetails";
 
 const Stack = createStackNavigator();
 
