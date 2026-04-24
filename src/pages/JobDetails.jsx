@@ -55,7 +55,8 @@ export default function JobDetails() {
   <p className="text-gray-600">{job.company}</p>
 
   <p className="text-sm text-gray-500">
-    📍 {job.location} • {job.jobType}
+    📍 {job.location}
+{job.jobType && ` • ${job.jobType}`}
   </p>
 
   {job.salary && (
