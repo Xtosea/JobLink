@@ -6,9 +6,8 @@ export default function History() {
   const { token } = useParams();
   const [application, setApplication] = useState(null);
 
-  const API =
-  process.env.REACT_APP_API_URL ||
-  "https://joblinkbackend.onrender.com/api";
+ const API_BASE = "https://joblinkbackend.onrender.com";
+
 
   useEffect(() => {
     axios.get(`${API}/applications/history/${token}`)
