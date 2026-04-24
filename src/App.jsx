@@ -6,6 +6,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
+import PostJob from "./pages/PostJob";
 
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
@@ -50,6 +51,7 @@ export default function App() {
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
 
 <HashLink to="/jobs" className="underline">Jobs</HashLink>
+<HashLink to="/postjobs" className="underline">Jobs</HashLink>
 
         </nav>
 
@@ -69,7 +71,7 @@ export default function App() {
     <Route path="/reply" element={<ReplyPage />} />
     <Route path="/admin/login" element={<AdminLogin />} />
     <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
+<Route path="/post-job" element={<PostJob />} />
  <Route path="/jobs/:id" element={<JobDetails />} />
  <Route path="/jobs" element={<Jobs />} />
 
