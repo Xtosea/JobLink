@@ -14,7 +14,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import AdBanner from "./components/AdBanner"; // Bottom ad
-
+import Jobs from "./pages/Jobs";
+import JobDetails from "./pages/JobDetails";
 
 import Footer from "./components/Footer";
 
@@ -65,6 +66,9 @@ export default function App() {
     <Route path="/reply" element={<ReplyPage />} />
     <Route path="/admin/login" element={<AdminLogin />} />
     <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+ <Route path="/jobs/:id" element={<JobDetails />} />
+ <Route path="/jobs" element={<Jobs />} />
 
     <Route path="/about" element={<About />} />
     <Route path="/terms" element={<Terms />} />
