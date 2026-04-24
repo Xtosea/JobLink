@@ -5,6 +5,8 @@ import { Capacitor } from "@capacitor/core";
 // Use proper API_BASE for APK vs Web
 const API_BASE =
  "https://joblinkbackend.onrender.com";
+import { Link } from "react-router-dom";
+
 
 // Full list of Nigerian job positions
 const JOB_POSITIONS_BY_TYPE = {
@@ -163,10 +165,30 @@ export default function ApplicantForm() {
   };
 
   return (
+  <div>
+    {/* 🔵 Browse Jobs Button */}
+    <div className="flex justify-center mb-4">
+      <Link to="/jobs">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+          Browse Jobs
+        </button>
+      </Link>
+    </div>
+
+    {/* 🧾 Application Form */}
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">Job Application</h2>
-      {successMsg && <p className="mb-4 text-green-600 text-center">{successMsg}</p>}
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Job Application
+      </h2>
+
+      {successMsg && (
+        <p className="mb-4 text-green-600 text-center">
+          {successMsg}
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* FULL FORM STAYS EXACTLY SAME */}
         <div>
           <label className="block text-sm font-medium mb-1">Full Name</label>
           <input
