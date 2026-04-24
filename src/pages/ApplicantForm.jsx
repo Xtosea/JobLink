@@ -279,5 +279,7 @@ export default function ApplicantForm() {
         </button>
       </form>
     </div>
+  </div>
+  </div>
   );
 }
