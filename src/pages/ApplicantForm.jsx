@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 // Use proper API_BASE for APK vs Web
 const API_BASE =
  "https://joblinkbackend.onrender.com";
-import { Link } from "react-router-dom";
+
 
 
 // Full list of Nigerian job positions
