@@ -51,6 +51,33 @@ export default function Jobs() {
     );
   };
 
+  const saveJob = async (jobId) => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user) {
+      alert("Please login to save jobs");
+      return;
+    }
+
+    await axios.post(
+      `${API}/jobs/save/${jobId}`,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    alert("Job saved ❤️");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save job");
+  }
+};
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
 
