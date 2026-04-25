@@ -167,10 +167,11 @@ export default function ApplicantForm() {
   return (
   <div>
 
+       {/* 🔵 post Job Button */}
 <div className="flex justify-center mb-4">
   <Link to="/post-job">
   <button className="bg-green-600 text-white px-8 py-1 rounded">
-    Post Job
+    Post a Job
   </button>
 </Link>
 </div>
