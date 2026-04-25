@@ -168,14 +168,19 @@ try {
 return (
 
 
-     {/* 🔵 post Job Button */}
-<div className="flex justify-center mb-4">
-  <Link to="/post-job">
-  <button className="bg-green-600 text-white px-8 py-2 rounded">
-    Post a Job
-  </button>
-</Link>
-</div>
+     
+  <div>
+
+    {/* 🔵 Post Job Button (only employer/admin) */}
+    {(user.role === "employer" || user.role === "admin") && (
+      <div className="flex justify-center mb-4">
+        <Link to="/post-job">
+          <button className="bg-green-600 text-white px-8 py-2 rounded">
+            Post a Job
+          </button>
+        </Link>
+      </div>
+    )}
 
     {/* 🔵 Browse Jobs Button */}
     <div className="flex justify-center mb-4">
@@ -185,6 +190,14 @@ return (
         </button>
       </Link>
     </div>
+
+    {/* REST OF YOUR PAGE */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      ...
+    </div>
+
+  </div>
+
 
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
