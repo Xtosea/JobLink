@@ -389,38 +389,33 @@ const updateStatus = async (id, status, reply = "") => {
 
     
    {/* ================= JOB APPLICANTS ================= */}
-<h2 className="text-xl font-bold mt-10 mb-4">
-  Job Applicants
-</h2>
+<h3 className="font-bold">{app.name}</h3>
 
-{jobApplicants.length === 0 ? (
-  <p className="text-gray-500">No job applicants yet.</p>
-) : (
-  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {jobApplicants.map((app, index) => (
-      <div key={index} className="border p-4 rounded bg-white shadow">
-        <h3 className="font-bold">{app.name}</h3>
+<p>Email: {app.email}</p>
 
-        <p>Email: {app.email}</p>
-        <p>Job: {app.jobTitle}</p>
+<p>
+  Job: {app.jobTitle || app.job?.title || "N/A"}
+</p>
 
-        <p className="text-sm text-gray-500">
-          Applied:{" "}
-          {app.appliedAt
-            ? new Date(app.appliedAt).toLocaleString()
-            : "No date"}
-        </p>
+<p className="text-sm text-gray-500">
+  Applied:{" "}
+  {app.appliedAt
+    ? new Date(app.appliedAt).toLocaleString()
+    : app.createdAt
+    ? new Date(app.createdAt).toLocaleString()
+    : "No date"}
+</p>
 
-        {app.cvUrl && (
-          <a
-            href={app.cvUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline mt-2 block"
-          >
-            View CV
-          </a>
-        )}
+{app.cvUrl && (
+  <a
+    href={app.cvUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-blue-600 underline mt-2 block"
+  >
+    View CV
+  </a>
+)}
       </div>
     ))}
   </div>
