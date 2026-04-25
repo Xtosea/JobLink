@@ -128,7 +128,7 @@ if (name === "jobPosition") setShowOtherJob(value === "Other");
 
 // ✅ Fixed regex: escape + sign
 const validateWhatsApp = (number) => {
-const regex = /^+234\d{10}$/;
+const regex = /^\+234\d{10}$/;
 return regex.test(number);
 };
 
