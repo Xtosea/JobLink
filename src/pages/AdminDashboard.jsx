@@ -19,6 +19,24 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
+const [jobApplicants, setJobApplicants] = useState([]);
+
+
+const fetchJobApplicants = async () => {
+  try {
+    const res = await axios.get(`${API}/jobs/admin/applicants`);
+    setJobApplicants(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+useEffect(() => {
+  fetchApplications();
+  fetchNotifications();
+  fetchJobApplicants(); // ✅ ADD THIS
+}, []);
+
 
   // Notifications
   const [notifications, setNotifications] = useState([]);
@@ -28,11 +46,7 @@ export default function AdminDashboard() {
   const notificationSound = new Audio("/sounds/notify.mp3");
   const prevNotifCount = useRef(0);
 
-  useEffect(() => {
-    fetchApplications();
-    fetchNotifications();
-  }, []);
-
+  
   // FETCH APPLICATIONS
   const fetchApplications = async () => {
     try {
@@ -374,5 +388,44 @@ const updateStatus = async (id, status, reply = "") => {
       )}
 
     </div>
+
+   {/* ================= JOB APPLICANTS ================= */}
+<h2 className="text-xl font-bold mt-10 mb-4">
+  Job Applicants
+</h2>
+
+{jobApplicants.length === 0 ? (
+  <p className="text-gray-500">No job applicants yet.</p>
+) : (
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {jobApplicants.map((app, index) => (
+      <div key={index} className="border p-4 rounded bg-white shadow">
+        <h3 className="font-bold">{app.name}</h3>
+
+        <p>Email: {app.email}</p>
+        <p>Job: {app.jobTitle}</p>
+
+        <p className="text-sm text-gray-500">
+          Applied:{" "}
+          {app.appliedAt
+            ? new Date(app.appliedAt).toLocaleString()
+            : "No date"}
+        </p>
+
+        {app.cvUrl && (
+          <a
+            href={app.cvUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline mt-2 block"
+          >
+            View CV
+          </a>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
   );
 }
