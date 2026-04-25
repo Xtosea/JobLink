@@ -3,6 +3,7 @@ import axios from "axios";
 import { Capacitor } from "@capacitor/core";
 import { Link } from "react-router-dom";
 
+
 // Use proper API_BASE for APK vs Web
 const API_BASE =
  "https://joblinkbackend.onrender.com";
@@ -186,14 +187,7 @@ export default function ApplicantForm() {
       </Link>
     </div>
 
- <div className="flex justify-center mb-4">
-  <Link to={`/jobs/${job._id}/applicants`}>
-  <button className="mt-2 bg-blue-500 text-white px-3 py-1 rounded">
-    View Applicants
-  </button>
-</Link>
-</div>
-
+ 
     {/* 🧾 Application Form */}
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">
