@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployerDashboard() {
   const [jobs, setJobs] = useState([]);
+
+  const navigate = useNavigate()
 
   const API =
     "https://joblinkbackend.onrender.com/api";
@@ -47,9 +50,13 @@ export default function EmployerDashboard() {
               Applicants: {job.applicationsCount || 0}
             </p>
 
-            <button className="mt-2 bg-blue-500 text-white px-3 py-1 rounded">
-              View Applicants
-            </button>
+            <button
+  onClick={() => navigate(`/jobs/${job._id}/applicants`)}
+  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded"
+>
+  View Applicants
+</button>
+
           </div>
         ))
       )}
