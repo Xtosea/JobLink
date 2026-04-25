@@ -1,149 +1,137 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Jobs() {
   const API = "https://joblinkbackend.onrender.com/api";
 
   const [jobs, setJobs] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const type = searchParams.get("type") || "";
-  const search = searchParams.get("search") || "";
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const query = new URLSearchParams(location.search);
+
+  const type = query.get("jobType") || "";
+  const category = query.get("category") || "";
+  const search = query.get("search") || "";
 
   useEffect(() => {
     const fetchJobs = async () => {
-      let url = `${API}/jobs?`;
+      try {
+        let url = `${API}/jobs?`;
 
-      if (type) url += `jobType=${type}&`;
-      if (search) url += `search=${search}`;
+        if (type) url += `jobType=${type}&`;
+        if (category) url += `category=${category}&`;
+        if (search) url += `search=${search}`;
 
-      const { data } = await axios.get(url);
-      setJobs(data);
+        const { data } = await axios.get(url);
+        setJobs(data);
+
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     fetchJobs();
-  }, [type, search]);
+  }, [type, category, search]);
+
+  // 🔎 HANDLE FILTER CHANGE
+  const handleFilter = (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    const newType = form.jobType.value;
+    const newCategory = form.category.value;
+    const newSearch = form.search.value;
+
+    navigate(
+      `/jobs?jobType=${newType}&category=${newCategory}&search=${newSearch}`
+    );
+  };
 
   return (
-    <div className="flex gap-4 p-4 bg-gray-100 min-h-screen">
+    <div className="p-4 max-w-5xl mx-auto">
 
-      {/* ================= LEFT SIDEBAR ================= */}
-      <div className="w-1/4 bg-white p-4 rounded shadow">
+      <h2 className="text-2xl font-bold mb-4">
+        Available Jobs
+      </h2>
 
-        <h3 className="font-bold mb-3">Filters</h3>
-
+      {/* 🔥 FILTER BAR */}
+      <form
+        onSubmit={handleFilter}
+        className="bg-white p-4 rounded shadow mb-6 grid md:grid-cols-4 gap-3"
+      >
         {/* SEARCH */}
         <input
-          type="text"
+          name="search"
           placeholder="Search jobs..."
           defaultValue={search}
-          onChange={(e) =>
-            setSearchParams({
-              type,
-              search: e.target.value,
-            })
-          }
-          className="w-full border p-2 mb-3 rounded"
+          className="border p-2"
         />
 
-        {/* JOB TYPES */}
-        <div className="space-y-2">
+        {/* TYPE */}
+        <select
+          name="jobType"
+          defaultValue={type}
+          className="border p-2"
+        >
+          <option value="">All Types</option>
+          <option>Full-time</option>
+          <option>Part-time</option>
+          <option>Remote</option>
+          <option>Contract</option>
+        </select>
 
-          <Link
-            to="/jobs"
-            className="block p-2 hover:bg-gray-100 rounded"
-          >
-            All Jobs
-          </Link>
+        {/* CATEGORY */}
+        <select
+          name="category"
+          defaultValue={category}
+          className="border p-2"
+        >
+          <option value="">All Categories</option>
+          <option>Engineering</option>
+          <option>Design</option>
+          <option>Marketing</option>
+        </select>
 
-          <Link
-            to="/jobs?type=Full-time"
-            className="block p-2 hover:bg-gray-100 rounded"
-          >
-            Full-time
-          </Link>
+        {/* BUTTON */}
+        <button className="bg-black text-white">
+          Filter
+        </button>
+      </form>
 
-          <Link
-            to="/jobs?type=Part-time"
-            className="block p-2 hover:bg-gray-100 rounded"
-          >
-            Part-time
-          </Link>
+      {/* 📦 JOB LIST */}
+      {jobs.length === 0 ? (
+        <p>No jobs found</p>
+      ) : (
+        jobs.map((job) => (
+          <Link key={job._id} to={`/jobs/${job._id}`}>
+            <div className="border p-4 mb-4 rounded hover:shadow bg-white">
 
-          <Link
-            to="/jobs?type=Remote"
-            className="block p-2 hover:bg-gray-100 rounded"
-          >
-            Remote
-          </Link>
+              <h3 className="font-bold text-lg">
+                {job.title}
+              </h3>
 
-        </div>
-      </div>
+              <p className="text-gray-600">
+                {job.company}
+              </p>
 
-      {/* ================= JOB LIST ================= */}
-      <div className="w-2/4">
+              <p className="text-sm text-gray-500">
+                📍 {job.location} • {job.jobType}
+              </p>
 
-        <h2 className="text-xl font-bold mb-4">
-          Available Jobs
-        </h2>
-
-        {jobs.length === 0 ? (
-          <p>No jobs found</p>
-        ) : (
-          jobs.map((job) => (
-            <Link key={job._id} to={`/jobs/${job._id}`}>
-
-              <div className="bg-white p-4 mb-3 rounded shadow hover:shadow-md cursor-pointer">
-
-                <h3 className="font-bold text-lg">
-                  {job.title}
-                </h3>
-
-                <p className="text-gray-600">
-                  {job.company}
+              {job.salary && (
+                <p className="text-green-600 font-semibold">
+                  💰 {job.salary}
                 </p>
+              )}
 
-                <p className="text-sm text-gray-500">
-                  📍 {job.location} • {job.jobType}
-                </p>
-
-                {job.salary && (
-                  <p className="text-green-600 font-semibold mt-1">
-                    💰 {job.salary}
-                  </p>
-                )}
-
-                {job.isFeatured && (
-                  <span className="text-yellow-500 text-sm">
-                    🔥 Featured
-                  </span>
-                )}
-
-              </div>
-
-            </Link>
-          ))
-        )}
-      </div>
-
-      {/* ================= RIGHT PANEL ================= */}
-      <div className="w-1/4 hidden lg:block">
-
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="font-bold mb-2">
-            Job Tips 💡
-          </h3>
-
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li>✔ Keep your CV updated</li>
-            <li>✔ Apply early</li>
-            <li>✔ Tailor your resume</li>
-          </ul>
-        </div>
-
-      </div>
-
+            </div>
+          </Link>
+        ))
+      )}
     </div>
   );
 }
