@@ -289,6 +289,28 @@ export default function ApplicantForm() {
         </button>
       </form>
     </div>
+
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+  <Link to="/jobs?jobType=Full-time" className="p-4 bg-white shadow text-center">
+    Full-time Jobs
+  </Link>
+
+  <Link to="/jobs?jobType=Remote" className="p-4 bg-white shadow text-center">
+    Remote Jobs
+  </Link>
+
+  <Link to="/jobs?category=Engineering" className="p-4 bg-white shadow text-center">
+    Engineering
+  </Link>
+
+  <Link to="/jobs?category=Design" className="p-4 bg-white shadow text-center">
+    Design
+  </Link>
+
+</div>
+
   </div>
   
   );
