@@ -186,7 +186,7 @@ export default function ApplicantForm() {
     </div>
 
 
-div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
   <Link to="/jobs?jobType=Full-time" className="p-4 bg-white shadow text-center">  
     Full-time Jobs  
