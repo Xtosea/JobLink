@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Jobs() {
   const API = "https://joblinkbackend.onrender.com/api";
@@ -16,6 +16,35 @@ export default function Jobs() {
   const category = query.get("category") || "";
   const search = query.get("search") || "";
 
+  // ❤️ SAVE JOB FUNCTION
+  const saveJob = async (jobId) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
+
+      if (!user || !token) {
+        alert("Please login to save jobs");
+        return;
+      }
+
+      await axios.post(
+        `${API}/jobs/save/${jobId}`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      alert("Job saved ❤️");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save job");
+    }
+  };
+
+  // 🔄 FETCH JOBS
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -27,7 +56,6 @@ export default function Jobs() {
 
         const { data } = await axios.get(url);
         setJobs(data);
-
       } catch (err) {
         console.error(err);
       }
@@ -36,7 +64,7 @@ export default function Jobs() {
     fetchJobs();
   }, [type, category, search]);
 
-  // 🔎 HANDLE FILTER CHANGE
+  // 🔎 FILTER HANDLER
   const handleFilter = (e) => {
     e.preventDefault();
 
@@ -51,41 +79,12 @@ export default function Jobs() {
     );
   };
 
-  const saveJob = async (jobId) => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-
-    if (!user) {
-      alert("Please login to save jobs");
-      return;
-    }
-
-    await axios.post(
-      `${API}/jobs/save/${jobId}`,
-      {},
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-
-    alert("Job saved ❤️");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to save job");
-  }
-};
-
   return (
     <div className="p-4 max-w-5xl mx-auto">
 
       <h2 className="text-2xl font-bold mb-4">
         Available Jobs
       </h2>
-
-  
 
       {/* 🔥 FILTER BAR */}
       <form
@@ -126,39 +125,61 @@ export default function Jobs() {
         </select>
 
         {/* BUTTON */}
-        <button className="bg-black text-white">
+        <button className="bg-black text-white rounded">
           Filter
         </button>
       </form>
 
       {/* 📦 JOB LIST */}
       {jobs.length === 0 ? (
-        <p>No jobs found</p>
+        <p className="text-gray-500">No jobs found</p>
       ) : (
         jobs.map((job) => (
-          <Link key={job._id} to={`/jobs/${job._id}`}>
-            <div className="border p-4 mb-4 rounded hover:shadow bg-white">
+          <div
+            key={job._id}
+            className="border p-4 mb-4 rounded hover:shadow bg-white cursor-pointer"
+            onClick={() => navigate(`/jobs/${job._id}`)}
+          >
 
-              <h3 className="font-bold text-lg">
-                {job.title}
-              </h3>
+            {/* TITLE */}
+            <h3 className="font-bold text-lg">
+              {job.title}
+            </h3>
 
-              <p className="text-gray-600">
-                {job.company}
+            {/* COMPANY */}
+            <p className="text-gray-600">
+              {job.company}
+            </p>
+
+            {/* SALARY */}
+            {job.salary && (
+              <p className="text-green-600 font-semibold">
+                💰 {job.salary}
               </p>
+            )}
 
-              <p className="text-sm text-gray-500">
+            {/* FOOTER */}
+            <div className="flex justify-between items-center mt-3">
+
+              <span className="text-sm text-gray-500">
                 📍 {job.location} • {job.jobType}
-              </p>
+              </span>
 
-              {job.salary && (
-                <p className="text-green-600 font-semibold">
-                  💰 {job.salary}
-                </p>
-              )}
+              {/* ❤️ SAVE BUTTON */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // prevents navigation
+                  saveJob(job._id);
+                }}
+                className="text-red-500 text-xl"
+                title="Save Job"
+              >
+                ❤️
+              </button>
 
             </div>
-          </Link>
+
+          </div>
         ))
       )}
     </div>
