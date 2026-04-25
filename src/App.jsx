@@ -7,7 +7,7 @@ import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
 import PostJob from "./pages/PostJob";
-
+import { DashboardRouter } from "./DashboardRouter";
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
 import AdminLogin from "./pages/AdminLogin";
@@ -58,6 +58,9 @@ export default function App() {
         </nav>
 
 <nav>...</nav>
+
+DashboardRouter
+
 
 <div className="max-w-4xl mx-auto w-full flex justify-center">
   <HpfAd position="top" />
