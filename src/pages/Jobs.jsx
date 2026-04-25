@@ -58,6 +58,10 @@ export default function Jobs() {
         Available Jobs
       </h2>
 
+   <button onClick={() => saveJob(job._id)}>
+  ❤️ Save Job
+</button>
+
       {/* 🔥 FILTER BAR */}
       <form
         onSubmit={handleFilter}
