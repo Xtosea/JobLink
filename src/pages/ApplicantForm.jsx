@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Capacitor } from "@capacitor/core";
+import { Link } from "react-router-dom";
 
 // Use proper API_BASE for APK vs Web
 const API_BASE =
 "https://joblinkbackend.onrender.com";
-import { Link } from "react-router-dom";
+
 
 // Full list of Nigerian job positions
 const JOB_POSITIONS_BY_TYPE = {
