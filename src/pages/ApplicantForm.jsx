@@ -111,7 +111,7 @@ const [showOtherJob, setShowOtherJob] = useState(false);
 const [loading, setLoading] = useState(false);
 const [successMsg, setSuccessMsg] = useState("");
 
-
+const user = JSON.parse(localStorage.getItem("user")) || {};
 
 useEffect(() => {
 const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
