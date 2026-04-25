@@ -185,6 +185,27 @@ export default function ApplicantForm() {
       </Link>
     </div>
 
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+  <Link to="/jobs?jobType=Full-time" className="p-4 bg-white shadow text-center">
+    Full-time Jobs
+  </Link>
+
+  <Link to="/jobs?jobType=Remote" className="p-4 bg-white shadow text-center">
+    Remote Jobs
+  </Link>
+
+  <Link to="/jobs?category=Engineering" className="p-4 bg-white shadow text-center">
+    Engineering
+  </Link>
+
+  <Link to="/jobs?category=Design" className="p-4 bg-white shadow text-center">
+    Design
+  </Link>
+
+</div>
+
     {/* 🧾 Application Form */}
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-4 text-center">
@@ -289,27 +310,6 @@ export default function ApplicantForm() {
         </button>
       </form>
     </div>
-
-
-<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-  <Link to="/jobs?jobType=Full-time" className="p-4 bg-white shadow text-center">
-    Full-time Jobs
-  </Link>
-
-  <Link to="/jobs?jobType=Remote" className="p-4 bg-white shadow text-center">
-    Remote Jobs
-  </Link>
-
-  <Link to="/jobs?category=Engineering" className="p-4 bg-white shadow text-center">
-    Engineering
-  </Link>
-
-  <Link to="/jobs?category=Design" className="p-4 bg-white shadow text-center">
-    Design
-  </Link>
-
-</div>
 
   </div>
   
