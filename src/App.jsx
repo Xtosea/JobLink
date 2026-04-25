@@ -7,7 +7,7 @@ import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
 import PostJob from "./pages/PostJob";
-import { DashboardRouter } from "./DashboardRouter";
+import { DashboardRouter } from "./routes/DashboardRouter";
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
 import AdminLogin from "./pages/AdminLogin";
