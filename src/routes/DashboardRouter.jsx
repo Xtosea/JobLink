@@ -1,5 +1,5 @@
 import React from "react";
-import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerDashboard from "../pages/EmployerDashboard";
 import JobApplicants from "../pages/ApplicantDashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 
