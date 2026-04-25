@@ -387,8 +387,7 @@ const updateStatus = async (id, status, reply = "") => {
         </div>
       )}
 
-    </div>
-
+    
    {/* ================= JOB APPLICANTS ================= */}
 <h2 className="text-xl font-bold mt-10 mb-4">
   Job Applicants
@@ -426,6 +425,9 @@ const updateStatus = async (id, status, reply = "") => {
     ))}
   </div>
 )}
+
+</div>
+
 
   );
 }
