@@ -4,33 +4,12 @@ import { Link } from "react-router-dom";
 
 const API_BASE = "https://joblinkbackend.onrender.com";
 
-/* =========================
-   JOB POSITIONS DATA
-========================= */
 const JOB_POSITIONS_BY_TYPE = {
-  "Full-time": [
-    "Accountant",
-    "Frontend Developer",
-    "Backend Developer",
-    "UI/UX Designer",
-    "Teacher",
-    "Nurse",
-    "Driver",
-    "Digital Marketer",
-  ].sort(),
-
-  "Part-time": [
-    "Content Creator",
-    "Tutor",
-    "Security Guard",
-    "Cleaner",
-    "Driver",
-  ].sort(),
+  "Full-time": ["Accountant", "Developer", "Designer"],
+  "Part-time": ["Cleaner", "Tutor", "Driver"],
 };
 
 export default function ApplicantForm() {
-  const user = JSON.parse(localStorage.getItem("user"));
-
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -43,51 +22,29 @@ export default function ApplicantForm() {
     JOB_POSITIONS_BY_TYPE["Full-time"]
   );
 
-  const [showOtherJob, setShowOtherJob] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  /* =========================
-     UPDATE JOB OPTIONS
-  ========================= */
+  // ✅ SAFE USER PARSE (IMPORTANT FIX)
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
   useEffect(() => {
-    setJobOptions(JOB_POSITIONS_BY_TYPE[form.jobType] || []);
+    setJobOptions(JOB_POSITIONS_BY_TYPE[form.jobType]);
     setForm((prev) => ({ ...prev, jobPosition: "" }));
-    setShowOtherJob(false);
   }, [form.jobType]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm({ ...form, [name]: value });
-
-    if (name === "jobPosition") {
-      setShowOtherJob(value === "Other");
-    }
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const validateWhatsApp = (number) => {
-    return /^\+234\d{10}$/.test(number);
-  };
-
-  /* =========================
-     SUBMIT FORM
-  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateWhatsApp(form.mobile)) {
-      alert("Invalid WhatsApp number format");
-      return;
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
-
       await axios.post(`${API_BASE}/api/applications`, form);
 
-      setSuccessMsg("Application submitted successfully 🎉");
-
+      setSuccessMsg("Application submitted!");
       setForm({
         fullname: "",
         email: "",
@@ -96,7 +53,7 @@ export default function ApplicantForm() {
         jobPosition: "",
       });
     } catch (err) {
-      alert(err.response?.data?.message || "Submission failed");
+      alert("Error submitting application");
     } finally {
       setLoading(false);
     }
@@ -105,21 +62,17 @@ export default function ApplicantForm() {
   return (
     <div className="max-w-5xl mx-auto p-4">
 
-      {/* =========================
-          ROLE BASED ACTIONS
-      ========================= */}
-      <div className="flex justify-between mb-6">
+      {/* ================= TOP NAV BUTTONS ================= */}
+      <div className="flex flex-wrap gap-3 justify-center mb-6">
 
-        {/* Applicant View */}
-        {user?.role === "applicant" && (
-          <Link to="/jobs">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded">
-              Browse Jobs
-            </button>
-          </Link>
-        )}
+        {/* ALWAYS SHOW */}
+        <Link to="/jobs">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded">
+            Browse Jobs
+          </button>
+        </Link>
 
-        {/* Employer View */}
+        {/* ROLE: EMPLOYER */}
         {user?.role === "employer" && (
           <Link to="/post-job">
             <button className="bg-green-600 text-white px-4 py-2 rounded">
@@ -127,12 +80,19 @@ export default function ApplicantForm() {
             </button>
           </Link>
         )}
+
+        {/* ROLE: APPLICANT */}
+        {user?.role === "applicant" && (
+          <Link to="/jobs">
+            <button className="bg-purple-600 text-white px-4 py-2 rounded">
+              Find Jobs
+            </button>
+          </Link>
+        )}
       </div>
 
-      {/* =========================
-          JOB CATEGORY CARDS
-      ========================= */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* ================= CATEGORY CARDS ================= */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
 
         <Link to="/jobs?jobType=Full-time" className="p-4 bg-white shadow rounded text-center">
           Full-time Jobs
@@ -152,100 +112,72 @@ export default function ApplicantForm() {
 
       </div>
 
-      {/* =========================
-          APPLICATION FORM
-      ========================= */}
-      <div className="bg-white p-6 rounded shadow">
+      {/* ================= FORM ================= */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow max-w-md mx-auto"
+      >
+        <h2 className="text-xl font-bold mb-4">Job Application</h2>
 
-        <h2 className="text-xl font-bold mb-4">
-          Job Application
-        </h2>
+        <input
+          name="fullname"
+          placeholder="Full Name"
+          value={form.fullname}
+          onChange={handleChange}
+          className="w-full border p-2 mb-3"
+        />
+
+        <input
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          className="w-full border p-2 mb-3"
+        />
+
+        <input
+          name="mobile"
+          placeholder="Phone"
+          value={form.mobile}
+          onChange={handleChange}
+          className="w-full border p-2 mb-3"
+        />
+
+        <select
+          name="jobType"
+          value={form.jobType}
+          onChange={handleChange}
+          className="w-full border p-2 mb-3"
+        >
+          <option>Full-time</option>
+          <option>Part-time</option>
+        </select>
+
+        <select
+          name="jobPosition"
+          value={form.jobPosition}
+          onChange={handleChange}
+          className="w-full border p-2 mb-3"
+        >
+          <option value="">Select Position</option>
+          {jobOptions.map((job) => (
+            <option key={job}>{job}</option>
+          ))}
+        </select>
+
+        <button
+          disabled={loading}
+          className="w-full bg-green-600 text-white py-2 rounded"
+        >
+          {loading ? "Submitting..." : "Submit"}
+        </button>
 
         {successMsg && (
-          <p className="text-green-600 mb-3">{successMsg}</p>
+          <p className="text-green-600 mt-3 text-center">
+            {successMsg}
+          </p>
         )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          <input
-            type="text"
-            name="fullname"
-            placeholder="Full Name"
-            value={form.fullname}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
-
-          <input
-            type="tel"
-            name="mobile"
-            placeholder="+2348012345678"
-            value={form.mobile}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
-
-          {/* JOB TYPE */}
-          <select
-            name="jobType"
-            value={form.jobType}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            {Object.keys(JOB_POSITIONS_BY_TYPE).map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </select>
-
-          {/* JOB POSITION */}
-          {!showOtherJob ? (
-            <select
-              name="jobPosition"
-              value={form.jobPosition}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-            >
-              <option value="">Select Position</option>
-              {jobOptions.map((job) => (
-                <option key={job}>{job}</option>
-              ))}
-              <option>Other</option>
-            </select>
-          ) : (
-            <input
-              type="text"
-              name="jobPosition"
-              placeholder="Enter position"
-              value={form.jobPosition}
-              onChange={handleChange}
-              className="w-full border p-2 rounded"
-            />
-          )}
-
-          {/* SUBMIT */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-green-600 text-white py-2 rounded"
-          >
-            {loading ? "Submitting..." : "Submit Application"}
-          </button>
-
-        </form>
-      </div>
-
+      </form>
     </div>
   );
 }
