@@ -1,6 +1,6 @@
 import React from "react";
 import EmployerDashboard from "../pages/EmployerDashboard";
-import ApplicantDashboard from "../pages/ApplicantDashboard";
+import JobApplicants from "../pages/ApplicantDashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 
 export function DashboardRouter() {
