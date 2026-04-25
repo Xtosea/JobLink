@@ -79,6 +79,7 @@ export default function App() {
     <Route path="/terms" element={<Terms />} />
 
     <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
+<Route path="/types" element={<JobTypes />} />
   </Routes>
 
   <InstallPWAButton />
