@@ -7,6 +7,12 @@ export default function Jobs() {
 
   const [jobs, setJobs] = useState([]);
 
+const type = query.get("type");
+
+const url = type
+  ? `${API}/jobs?jobType=${type}`
+  : `${API}/jobs`;
+
   useEffect(() => {
     const fetchJobs = async () => {
       const { data } = await axios.get(`${API}/jobs`);
