@@ -79,12 +79,27 @@ export default function Jobs() {
     );
   };
 
+   const { data } = await axios.get(url);
+
+const sortedJobs = data.sort((a, b) => {
+  return (b.isFeatured === true) - (a.isFeatured === true);
+});
+
+setJobs(sortedJobs);
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
 
       <h2 className="text-2xl font-bold mb-4">
         Available Jobs
       </h2>
+
+     {job.isFeatured && (
+  <span className="bg-yellow-400 text-black px-2 py-1 text-xs rounded">
+    🔥 Featured
+  </span>
+)}
+
 
       {/* 🔥 FILTER BAR */}
       <form
