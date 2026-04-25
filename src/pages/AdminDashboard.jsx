@@ -416,10 +416,6 @@ const updateStatus = async (id, status, reply = "") => {
     View CV
   </a>
 )}
-      </div>
-    ))}
-  </div>
-)}
 
 </div>
 
