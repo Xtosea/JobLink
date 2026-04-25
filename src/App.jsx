@@ -17,6 +17,7 @@ import Terms from "./pages/Terms";
 import AdBanner from "./components/AdBanner"; // Bottom ad
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
+import JobApplicants from "./pages/JobApplicants";
 
 import Footer from "./components/Footer";
 
@@ -81,7 +82,12 @@ export default function App() {
 
     <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
 <Route path="/types" element={<JobTypes />} />
-  </Routes>
+ <Route
+  path="/jobs/:id/applicants"
+  element={<JobApplicants />}
+/>
+
+ </Routes>
 
   <InstallPWAButton />
 </div>
