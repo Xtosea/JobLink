@@ -26,6 +26,7 @@ export default function JobApplicants() {
     fetchApplicants();
   }, [id]);
 
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-bold mb-4">
@@ -38,33 +39,48 @@ export default function JobApplicants() {
         applicants.map((app) => (
           <div
             key={app._id}
-            className="border p-4 mb-3 rounded bg-white"
-          >
-            <h2 className="font-bold">{app.name}</h2>
+            <div className="border p-4 mb-3 rounded bg-white">
 
-            <p>Email: {app.email}</p>
+  <h2 className="font-bold">{app.name}</h2>
 
-            <p className="text-sm text-gray-500">
-              Applied:{" "}
-              {app.appliedAt
-                ? new Date(app.appliedAt).toLocaleString()
-                : "No date"}
-            </p>
+  <p>Email: {app.email}</p>
 
-            {/* CV */}
-            {app.cvFile && (
-              <a
-                href={app.cvFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                View CV
-              </a>
-            )}
-          </div>
-        ))
-      )}
-    </div>
+  <p className="text-sm text-gray-500">
+    Applied: {new Date(app.appliedAt).toLocaleString()}
+  </p>
+
+  <p className="mt-1">
+    Status: <b>{app.status || "Pending"}</b>
+  </p>
+
+  {app.cvFile && (
+    <a
+      href={app.cvFile}
+      target="_blank"
+      className="text-blue-600 underline"
+    >
+      View CV
+    </a>
+  )}
+
+  {/* ACTION BUTTONS */}
+  <div className="flex gap-2 mt-3">
+
+    <button
+      onClick={() => updateStatus(app._id, "Accepted")}
+      className="bg-green-500 text-white px-3 py-1 rounded"
+    >
+      Accept
+    </button>
+
+    <button
+      onClick={() => updateStatus(app._id, "Rejected")}
+      className="bg-red-500 text-white px-3 py-1 rounded"
+    >
+      Reject
+    </button>
+
+  </div>
+</div>
   );
 }
