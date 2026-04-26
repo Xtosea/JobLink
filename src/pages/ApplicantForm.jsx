@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Capacitor } from "@capacitor/core";
+import { useNavigate } from "react-router-dom";
 
 // Use proper API_BASE for APK vs Web
 const API_BASE =
@@ -112,6 +113,7 @@ export default function ApplicantForm() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
+const navigate = useNavigate();
 
 const requireAuth = (action) => {
   const token = localStorage.getItem("token");
