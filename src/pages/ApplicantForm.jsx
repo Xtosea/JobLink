@@ -170,33 +170,24 @@ export default function ApplicantForm() {
   return (
   <div>
 
-       {/* 🔵 Browse Jobs Button */}
-<div className="flex justify-center gap-3 mb-4">
+          {/* 🔵 Post Job Butto */}
+    <div className="flex justify-center mb-4">
+        <Link to="/post-job">
+          <button className="bg-green-600 text-white px-8 py-2 rounded">
+            Post a Job
+          </button>
+        </Link>
+      </div>
+    )}
 
-  <Link to="/jobs">
-    <button className="bg-blue-600 text-white px-4 py-2 rounded">
-      Browse Jobs
-    </button>
-  </Link>
-
-  {/* 🔵 post a Job Button */}
-  {user?.role === "employer" && (
-    <>
-      <Link to="/post-job">
-        <button className="bg-green-600 text-white px-4 py-2 rounded">
-          Post a Job
+    {/* 🔵 Browse Jobs Button */}
+    <div className="flex justify-center mb-4">
+      <Link to="/jobs">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+          Browse Jobs
         </button>
       </Link>
-
-      <Link to="/dashboard">
-        <button className="bg-black text-white px-4 py-2 rounded">
-          Go to Dashboard
-        </button>
-      </Link>
-    </>
-  )}
-
-</div>
+    </div>
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
