@@ -194,7 +194,7 @@ const requireAuth = (action) => {
 >
   Post a Job
 </button>
-   
+ </div>  
 
 
   {/* 🔵 Post Job Butto */}
