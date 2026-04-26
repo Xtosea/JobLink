@@ -61,6 +61,21 @@ export default function Login() {
         />
 
         {/* PASSWORD FIELD */}
-        <div className="relative">
-          <input
-            type={show
+<div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Password"
+    className="w-full border p-2 rounded"
+    onChange={(e) =>
+      setForm({ ...form, password: e.target.value })
+    }
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-2 top-2 text-sm text-blue-600"
+  >
+    {showPassword ? "Hide" : "Show"}
+  </button>
+</div>
