@@ -79,13 +79,7 @@ export default function Jobs() {
     );
   };
 
-   const { data } = await axios.get(url);
-
-const sortedJobs = data.sort((a, b) => {
-  return (b.isFeatured === true) - (a.isFeatured === true);
-});
-
-setJobs(sortedJobs);
+   
 
   return (
     <div className="p-4 max-w-5xl mx-auto">
