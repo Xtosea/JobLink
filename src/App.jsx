@@ -110,9 +110,16 @@ element={<JobTypes />} />
 
 <Route path="/employer-dashboard" element={<EmployerDashboard />} />
 
-<Route path="/roledashboard" element={<Dashboard />} />
+<<Route path="/roledashboard" element={<Dashboard />} />
 
-<HashLink to="/dashboard" className="underline">Dashboard</HashLink>
+<Route
+  path="/employer-dashboard"
+  element={
+    <ProtectedRoute role="employer">
+      <EmployerDashboard />
+    </ProtectedRoute>
+  }
+/>
 
 
  </Routes>
