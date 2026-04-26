@@ -114,6 +114,9 @@ export default function ApplicantForm() {
 
 const user = JSON.parse(localStorage.getItem("user") || "null");
 
+console.log("USER:", user);
+
+
   useEffect(() => {
     const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
     setJobOptions(options);
@@ -179,23 +182,12 @@ const user = JSON.parse(localStorage.getItem("user") || "null");
   </Link>
 
     {/* 🔵 post a Job Button */}
-  {user?.role === "employer" && (
+  {user?.role === "employer" ? (
     <Link to="/post-job">
       <button className="bg-green-600 text-white px-4 py-2 rounded">
         Post a Job
       </button>
     </Link>
-  )}
-
-  {/* 🔵 Applicants */}
-   {user?.role === "applicant" && (
-    <Link to="/jobs">
-      <button className="bg-purple-600 text-white px-4 py-2 rounded">
-        Find Jobs
-      </button>
-    </Link>
-  )}
-
 </div>
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
