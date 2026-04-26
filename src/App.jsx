@@ -109,16 +109,8 @@ element={<JobTypes />} />
   element={<JobApplicants />}
 />
 
-<Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <Dashboard />
-    </ProtectedRoute>
-  }
-/>
 
-<Route path="/joblogin" element={<Login />} />
+<Route path="/login" element={<Login />} />
 <Route path="/registerjob" element={<Register />} />
 
 
