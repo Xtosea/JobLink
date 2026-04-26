@@ -184,10 +184,10 @@ const requireAuth = (action) => {
   <div>
 
           {/* 🔵 Browse Jobs Button */}
-    <div className="flex justify-center mb-4">
+    <div className="flex justify-center mb-4 py-8">
       <button
   onClick={() => {
-    if (!requireAuth("post a job")) return;
+    if (!requireAuth("Post a job")) return;
     navigate("/post-job");
   }}
   className="bg-green-600 text-white px-4 py-2 rounded"
@@ -201,7 +201,7 @@ const requireAuth = (action) => {
     <div className="flex justify-center mb-2">
         <Link to="/jobs">
           <button className="bg-blue-600 text-white px-8 py-2 rounded">
-            Post a Job
+        Apply For Jobs
           </button>
         </Link>
       </div>
