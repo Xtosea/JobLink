@@ -7,7 +7,7 @@ import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
 import PostJob from "./pages/PostJob";
-import { DashboardRouter } from "./routes/DashboardRouter";
+//import { DashboardRouter } from "./routes/DashboardRouter";
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
 import AdminLogin from "./pages/AdminLogin";
@@ -59,7 +59,7 @@ export default function App() {
 
 <nav>...</nav>
 
-DashboardRouter
+
 
 
 <div className="max-w-4xl mx-auto w-full flex justify-center">
@@ -69,13 +69,17 @@ DashboardRouter
 {/* ================= ROUTES ================= */}
 <div className="flex-grow">
   <Routes>
+
     <Route path="/apply" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
     <Route path="/upload/:token" element={<ProofUpload />} />
+
     <Route path="/history/:token" element={<HistoryPage />} />
 
     <Route path="/reply" element={<ReplyPage />} />
     <Route path="/admin/login" element={<AdminLogin />} />
+
     <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
 <Route path="/post-job" element={<PostJob />} />
  <Route path="/jobs/:id" element={<JobDetails />} />
  <Route path="/jobs" element={<Jobs />} />
@@ -84,11 +88,14 @@ DashboardRouter
     <Route path="/terms" element={<Terms />} />
 
     <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
+
 <Route path="/types" element={<JobTypes />} />
+
  <Route
   path="/jobs/:id/applicants"
   element={<JobApplicants />}
 />
+
 <Route path="/employer-dashboard" element={<EmployerDashboard />} />
 
 
