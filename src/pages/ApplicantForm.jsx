@@ -112,9 +112,7 @@ export default function ApplicantForm() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-const user = JSON.parse(localStorage.getItem("user") || "null");
 
-console.log("USER:", user);
 
 
   useEffect(() => {
