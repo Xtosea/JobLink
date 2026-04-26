@@ -52,9 +52,17 @@ export default function App() {
           )}
 
           <HashLink to="/about" className="underline">About Us</HashLink>
+
           <HashLink to="/terms" className="underline">Terms And Conditions</HashLink>
 
 <HashLink to="/jobs" className="underline">Jobs</HashLink>
+
+HashLink to="/type" className="underline">Job Types</HashLink>
+
+HashLink to="/dashboard" className="underline">Dashboard</HashLink>
+
+
+
 <HashLink to="/postjobs" className="underline">Jobs</HashLink>
 
         </nav>
