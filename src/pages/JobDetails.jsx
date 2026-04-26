@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function JobDetails() {
@@ -15,7 +14,17 @@ export default function JobDetails() {
   
    const navigate = useNavigate();
 
-   const requireAuth = () => {
+   
+  // 🆕 Application form state
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    cv: null,
+  });
+
+  const [submitting, setSubmitting] =      useState(false);
+
+  const requireAuth = () => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -27,16 +36,7 @@ export default function JobDetails() {
   return true;
 };
 
-
-
-  // 🆕 Application form state
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    cv: null,
-  });
-
-  const [submitting, setSubmitting] = useState(false);
+  const token = localStorage.getItem("token");
 
   // 📄 Fetch job
   useEffect(() => {
@@ -189,22 +189,22 @@ export default function JobDetails() {
           className="w-full"
         />
 
-        <button
-  onClick={() => {
-    if (!requireAuth()) return;
-    handleApply();
-  }}
-  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center justify-center gap-2"
-  disabled={submitting}
->
-  {submitting ? (
-    "Submitting..."
-  ) : (
-    <>
-      🚀 Apply Now
-    </>
-  )}
-</button>
+        {!token ? (
+  <button
+    onClick={() => navigate("/login")}
+    className="w-full bg-gray-800 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:bg-black transition"
+  >
+    🔒 Login to Apply
+  </button>
+) : (
+  <button
+    onClick={handleApply}
+    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+    disabled={submitting}
+  >
+    {submitting ? "Submitting..." : "🚀 Apply Now"}
+  </button>
+)}
 
       </div>
     </div>
