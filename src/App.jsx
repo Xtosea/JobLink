@@ -21,6 +21,7 @@ import JobDetails from "./pages/JobDetails";
 import JobApplicants from "./pages/JobApplicants";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
@@ -100,6 +101,14 @@ export default function App() {
 <Route path="/employer-dashboard" element={<EmployerDashboard />} />
 
 <Route path="/roledashboard" element={<Dashboard />} />
+
+  path="/employer-dashboard"
+  element={
+    <ProtectedRoute role="employer">
+      <EmployerDashboard />
+    </ProtectedRoute>
+  }
+/>
 
 
  </Routes>
