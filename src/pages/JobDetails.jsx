@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -11,6 +12,22 @@ export default function JobDetails() {
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+   const navigate = useNavigate();
+
+   const requireAuth = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login to apply for this job");
+    navigate("/login");
+    return false;
+  }
+
+  return true;
+};
+
+
 
   // 🆕 Application form state
   const [form, setForm] = useState({
@@ -173,12 +190,21 @@ export default function JobDetails() {
         />
 
         <button
-          onClick={handleApply}
-          className="w-full bg-green-600 text-white py-3 rounded text-lg hover:bg-green-700"
-          disabled={submitting}
-        >
-          {submitting ? "Submitting..." : "Apply Now"}
-        </button>
+  onClick={() => {
+    if (!requireAuth()) return;
+    handleApply();
+  }}
+  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center justify-center gap-2"
+  disabled={submitting}
+>
+  {submitting ? (
+    "Submitting..."
+  ) : (
+    <>
+      🚀 Apply Now
+    </>
+  )}
+</button>
 
       </div>
     </div>
