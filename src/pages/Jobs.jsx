@@ -80,6 +80,19 @@ export default function Jobs() {
     fetchJobs();
   }, [type, category, search]);
 
+
+ <button
+  onClick={() => {
+    if (!requireAuth("post a job")) return;
+
+    navigate("/post-job");
+  }}
+  className="bg-green-600 text-white px-4 py-2 rounded"
+>
+  Post a Job
+</button>
+
+
   // 🔎 FILTER HANDLER
   const handleFilter = (e) => {
     e.preventDefault();
@@ -106,6 +119,33 @@ export default function Jobs() {
       <h2 className="text-2xl font-bold mb-4">
         Available Jobs
       </h2>
+
+  
+    <div className="flex justify-between items-center mb-4">
+
+  <h2 className="text-2xl font-bold">
+    Available Jobs
+  </h2>
+
+  <button
+    onClick={() => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login to post a job");
+        navigate("/login");
+        return;
+      }
+
+      navigate("/post-job");
+    }}
+    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+  >
+    + Post a Job
+  </button>
+
+</div>
+
 
       {/* 🔍 FILTER */}
       <form
