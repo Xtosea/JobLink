@@ -7,7 +7,7 @@ import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
 import PostJob from "./pages/PostJob";
-import { RoleDashboard } from "./pages/RoleDashboard";
+import RoleDashboard from "./pages/RoleDashboard";
 
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
