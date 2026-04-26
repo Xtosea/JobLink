@@ -113,7 +113,17 @@ export default function ApplicantForm() {
   const [successMsg, setSuccessMsg] = useState("");
 
 
+const requireAuth = (action) => {
+  const token = localStorage.getItem("token");
 
+  if (!token) {
+    alert(`Please login to ${action}`);
+    navigate("/login");
+    return false;
+  }
+
+  return true;
+};
 
   useEffect(() => {
     const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
