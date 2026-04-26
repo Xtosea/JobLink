@@ -69,6 +69,13 @@ export default function EmployerDashboard() {
             key={job._id}
             className="border p-4 mb-3 rounded bg-white"
           >
+
+          {job.isFeatured && (
+  <span className="bg-yellow-400 text-black px-2 py-1 text-xs rounded">
+    🔥 Featured
+  </span>
+)}
+
             <h2 className="font-bold text-lg">{job.title}</h2>
             <p>{job.company}</p>
 
