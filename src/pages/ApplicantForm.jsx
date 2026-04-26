@@ -184,7 +184,7 @@ const requireAuth = (action) => {
   <div>
 
           {/* 🔵 Browse Jobs Button */}
-    <div className="flex justify-center mb-4 py-8">
+    <div className="flex justify-center mb-4 px-8">
       <button
   onClick={() => {
     if (!requireAuth("Post a job")) return;
