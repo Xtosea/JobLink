@@ -28,6 +28,17 @@ export default function Navbar() {
           Jobs
         </Link>
 
+  <Link to="/terms" className="text-gray-700">
+          Terms And Conditions 
+
+  <Link to="/about" className="text-gray-700">
+          About Us
+
+
+  <Link to="/apply" className="text-gray-700">
+          Apply
+
+
         {/* 👇 EMPLOYER ONLY */}
         {user?.role === "employer" && (
           <Link
@@ -59,20 +70,20 @@ export default function Navbar() {
               onClick={logout}
               className="bg-red-500 text-white px-3 py-1 rounded text-sm"
             >
-              Logout
+              SignOut
             </button>
           </>
         ) : (
           <>
             <Link
-              to="/login"
+              to="/signin"
               className="text-blue-600 font-medium"
             >
-              Login
+              SignIn
             </Link>
 
             <Link
-              to="/register"
+              to="/signup"
               className="bg-blue-600 text-white px-3 py-1 rounded"
             >
               Register
