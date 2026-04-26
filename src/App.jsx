@@ -27,6 +27,8 @@ import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
 import HpfAd from "./components/HpfAd";
 import JobTypes from "./pages/JobTypes";
+import JobLogin from "./pages/JobLogin";
+import RegisterJob from "./pages/RegisterJob";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -117,14 +119,8 @@ element={<JobTypes />} />
   }
 />
 
-<Route
-  path="/employer-dashboard"
-  element={
-    <ProtectedRoute role="employer">
-      <EmployerDashboard />
-    </ProtectedRoute>
-  }
-/>
+<Route path="/joblogin" element={<Login />} />
+<Route path="/registerjob" element={<Register />} />
 
 
  </Routes>
