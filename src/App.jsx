@@ -27,8 +27,8 @@ import HashLink from "./components/HashLink";
 import InstallPWAButton from "./components/InstallPWAButton";
 import HpfAd from "./components/HpfAd";
 import JobTypes from "./pages/JobTypes";
-import JobLogin from "./pages/JobLogin";
-import RegisterJob from "./pages/RegisterJob";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 export default function App() {
   const [applicationToken, setApplicationToken] = useState(null);
@@ -59,9 +59,9 @@ export default function App() {
 
 <HashLink to="/jobs" className="underline">Jobs</HashLink>
 
-<HashLink to="/registerjob" className="underline">Register</HashLink>
+<HashLink to="/signup" className="underline">SignUp</HashLink>
 
-<HashLink to="/joblogin" className="underline">Login</HashLink>
+<HashLink to="/signin" className="underline">Signin</HashLink>
 
 
         </nav>
@@ -110,8 +110,8 @@ element={<JobTypes />} />
 />
 
 
-<Route path="/login" element={<Login />} />
-<Route path="/registerjob" element={<Register />} />
+<Route path="/signin" element={<SignIn />} />
+<Route path="/signup" element={<SignUp />} />
 
 
  </Routes>
