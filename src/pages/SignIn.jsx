@@ -6,7 +6,7 @@ export import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function Login() {
+export default function SignIn() {
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -196,7 +196,7 @@ export default function Login() {
 <p className="text-sm text-center mt-4">
   Don't have an account?{" "}
   <Link to="/signup" className="text-blue-600">
-    Register
+    SignUp
   </Link>
 </p>
 
