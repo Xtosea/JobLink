@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function Register() {
+export default function SignUp() {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -113,7 +113,7 @@ export default function Register() {
       <p className="text-sm text-center mt-4">
         Already have an account?{" "}
         <Link to="/login" className="text-green-600 font-semibold">
-          Login
+          SignIn
         </Link>
       </p>
     </div>
