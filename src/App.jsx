@@ -65,7 +65,7 @@ export default function App() {
 
         </nav>
 
-<nav>...</nav>
+
 
 
 
@@ -92,12 +92,16 @@ export default function App() {
  <Route path="/jobs/:id" element={<JobDetails />} />
  <Route path="/jobs" element={<Jobs />} />
 
-    <Route path="/about" element={<About />} />
-    <Route path="/terms" element={<Terms />} />
+    <Route path="/about"
+ element={<About />} />
+
+    <Route path="/terms" 
+element={<Terms />} />
 
     <Route path="/" element={<ApplicantForm setApplicationToken={setApplicationToken} />} />
 
-<Route path="/types" element={<JobTypes />} />
+<Route path="/types" 
+element={<JobTypes />} />
 
  <Route
   path="/jobs/:id/applicants"
@@ -106,15 +110,9 @@ export default function App() {
 
 <Route path="/employer-dashboard" element={<EmployerDashboard />} />
 
-<Route path="/Dashboard" element={<RoleDashboard />} />
+<Route path="/roledashboard" element={<Dashboard />} />
 
-  path="/employer-dashboard"
-  element={
-    <ProtectedRoute role="employer">
-      <EmployerDashboard />
-    </ProtectedRoute>
-  }
-/>
+<HashLink to="/dashboard" className="underline">Dashboard</HashLink>
 
 
  </Routes>
