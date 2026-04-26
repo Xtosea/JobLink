@@ -181,13 +181,23 @@ console.log("USER:", user);
     </button>
   </Link>
 
-    {/* 🔵 post a Job Button */}
-  {user?.role === "employer" ? (
-    <Link to="/post-job">
-      <button className="bg-green-600 text-white px-4 py-2 rounded">
-        Post a Job
-      </button>
-    </Link>
+  {/* 🔵 post a Job Button */}
+  {user?.role === "employer" && (
+    <>
+      <Link to="/post-job">
+        <button className="bg-green-600 text-white px-4 py-2 rounded">
+          Post a Job
+        </button>
+      </Link>
+
+      <Link to="/dashboard">
+        <button className="bg-black text-white px-4 py-2 rounded">
+          Go to Dashboard
+        </button>
+      </Link>
+    </>
+  )}
+
 </div>
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
