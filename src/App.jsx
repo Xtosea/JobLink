@@ -7,7 +7,7 @@ import ApplicantForm from "./pages/ApplicantForm";
 import ProofUpload from "./pages/ProofUpload";
 import HistoryPage from "./pages/History";
 import PostJob from "./pages/PostJob";
-import RoleDashboard from "./pages/RoleDashboard";
+import Dashboard from "./pages/Dashboard";
 
 // Admin pages
 import ReplyPage from "./pages/ReplyPage";
@@ -59,7 +59,7 @@ export default function App() {
 
 <HashLink to="/types" className="underline">Job Types</HashLink>
 
-<HashLink to="/roledashboard" className="underline">Dashboard</HashLink>
+<HashLink to="/dashboard" className="underline">Dashboard</HashLink>
 
 
 
@@ -108,9 +108,14 @@ element={<JobTypes />} />
   element={<JobApplicants />}
 />
 
-<Route path="/employer-dashboard" element={<EmployerDashboard />} />
-
-<Route path="/roledashboard" element={<Dashboard />} />
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
 
 <Route
   path="/employer-dashboard"
