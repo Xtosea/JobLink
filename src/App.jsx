@@ -57,13 +57,11 @@ export default function App() {
 
 <HashLink to="/jobs" className="underline">Jobs</HashLink>
 
-HashLink to="/type" className="underline">Job Types</HashLink>
+<HashLink to="/types" className="underline">Job Types</HashLink>
 
-HashLink to="/dashboard" className="underline">Dashboard</HashLink>
+<HashLink to="/dashboard" className="underline">Dashboard</HashLink>
 
 
-
-<HashLink to="/postjobs" className="underline">Jobs</HashLink>
 
         </nav>
 
