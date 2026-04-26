@@ -18,7 +18,7 @@ import AdBanner from "./components/AdBanner"; // Bottom ad
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
 import JobApplicants from "./pages/JobApplicants";
-
+import EmployerDashboard from "./pages/EmployerDashboard";
 import Footer from "./components/Footer";
 
 import HashLink from "./components/HashLink";
@@ -89,6 +89,8 @@ DashboardRouter
   path="/jobs/:id/applicants"
   element={<JobApplicants />}
 />
+<Route path="/employer-dashboard" element={<EmployerDashboard />} />
+
 
  </Routes>
 
