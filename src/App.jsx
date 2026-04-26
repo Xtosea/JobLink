@@ -59,10 +59,9 @@ export default function App() {
 
 <HashLink to="/jobs" className="underline">Jobs</HashLink>
 
-<HashLink to="/types" className="underline">Job Types</HashLink>
+<HashLink to="/registerjob" className="underline">Register</HashLink>
 
-<HashLink to="/dashboard" className="underline">Dashboard</HashLink>
-
+<HashLink to="/joblogin" className="underline">Login</HashLink>
 
 
         </nav>
