@@ -125,6 +125,19 @@ const requireAuth = (action) => {
   return true;
 };
 
+
+const requireAuth = (action) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert(`Please login to ${action}`);
+    navigate("/login");
+    return false;
+  }
+
+  return true;
+};
+
   useEffect(() => {
     const options = JOB_POSITIONS_BY_TYPE[form.jobType] || [];
     setJobOptions(options);
@@ -192,11 +205,16 @@ const requireAuth = (action) => {
 
     {/* 🔵 Browse Jobs Button */}
     <div className="flex justify-center mb-4">
-      <Link to="/jobs">
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">
-          Browse Jobs
-        </button>
-      </Link>
+      <button
+  onClick={() => {
+    if (!requireAuth("post a job")) return;
+
+    navigate("/post-job");
+  }}
+  className="bg-green-600 text-white px-4 py-2 rounded"
+>
+  Post a Job
+</button>
     </div>
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
