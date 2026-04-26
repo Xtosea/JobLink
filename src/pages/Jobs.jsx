@@ -6,6 +6,8 @@ export default function Jobs() {
   const API = "https://joblinkbackend.onrender.com/api";
 
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [savedJobs, setSavedJobs] = useState([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +37,9 @@ export default function Jobs() {
         }
       );
 
+      // ✅ update UI instantly
+      setSavedJobs((prev) => [...prev, jobId]);
+
       alert("Job saved ❤️");
     } catch (err) {
       console.error(err);
@@ -42,33 +47,40 @@ export default function Jobs() {
     }
   };
 
-  // 🔄 FETCH + SORT JOBS
+  // 🔄 FETCH JOBS
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        let url = `${API}/jobs?`;
+        setLoading(true);
 
-        if (type) url += `jobType=${type}&`;
-        if (category) url += `category=${category}&`;
-        if (search) url += `search=${search}`;
+        // ✅ clean query builder
+        const params = new URLSearchParams();
+
+        if (type) params.append("jobType", type);
+        if (category) params.append("category", category);
+        if (search) params.append("search", search);
+
+        const url = `${API}/jobs?${params.toString()}`;
 
         const { data } = await axios.get(url);
 
-        // 🔥 Sort featured jobs first
-        const sortedJobs = data.sort(
+        // ✅ safe sorting (no mutation)
+        const sortedJobs = [...data].sort(
           (a, b) => (b.isFeatured === true) - (a.isFeatured === true)
         );
 
         setJobs(sortedJobs);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchJobs();
   }, [type, category, search]);
 
-  // 🔎 FILTER
+  // 🔎 FILTER HANDLER
   const handleFilter = (e) => {
     e.preventDefault();
 
@@ -79,6 +91,15 @@ export default function Jobs() {
     );
   };
 
+  // ⏳ LOADING UI
+  if (loading) {
+    return (
+      <div className="p-6 text-center">
+        <p>Loading jobs...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
 
@@ -86,7 +107,7 @@ export default function Jobs() {
         Available Jobs
       </h2>
 
-      {/* FILTER */}
+      {/* 🔍 FILTER */}
       <form
         onSubmit={handleFilter}
         className="bg-white p-4 rounded shadow mb-6 grid md:grid-cols-4 gap-3"
@@ -95,10 +116,14 @@ export default function Jobs() {
           name="search"
           placeholder="Search jobs..."
           defaultValue={search}
-          className="border p-2"
+          className="border p-2 rounded"
         />
 
-        <select name="jobType" defaultValue={type} className="border p-2">
+        <select
+          name="jobType"
+          defaultValue={type}
+          className="border p-2 rounded"
+        >
           <option value="">All Types</option>
           <option>Full-time</option>
           <option>Part-time</option>
@@ -106,7 +131,11 @@ export default function Jobs() {
           <option>Contract</option>
         </select>
 
-        <select name="category" defaultValue={category} className="border p-2">
+        <select
+          name="category"
+          defaultValue={category}
+          className="border p-2 rounded"
+        >
           <option value="">All Categories</option>
           <option>Engineering</option>
           <option>Design</option>
@@ -118,27 +147,35 @@ export default function Jobs() {
         </button>
       </form>
 
-      {/* JOB LIST */}
+      {/* 📦 JOB LIST */}
       {jobs.length === 0 ? (
         <p className="text-gray-500">No jobs found</p>
       ) : (
         jobs.map((job) => (
           <div
             key={job._id}
-            className="border p-4 mb-4 rounded hover:shadow bg-white cursor-pointer"
+            className="border p-4 mb-4 rounded hover:shadow bg-white cursor-pointer transition"
             onClick={() => navigate(`/jobs/${job._id}`)}
           >
-
-            {/* 🔥 FEATURED BADGE (FIXED) */}
+            {/* 🔥 FEATURED */}
             {job.isFeatured && (
-              <span className="bg-yellow-400 text-black px-2 py-1 text-xs rounded">
-                🔥 Featured
-              </span>
+              <div className="mb-1">
+                <span className="bg-yellow-400 text-black px-2 py-1 text-xs rounded">
+                  🔥 Featured
+                </span>
+                <div className="text-xs text-gray-500">
+                  Urgent Hire
+                </div>
+              </div>
             )}
 
-            <h3 className="font-bold text-lg">{job.title}</h3>
+            <h3 className="font-bold text-lg">
+              {job.title}
+            </h3>
 
-            <p className="text-gray-600">{job.company}</p>
+            <p className="text-gray-600">
+              {job.company}
+            </p>
 
             {job.salary && (
               <p className="text-green-600 font-semibold">
@@ -151,17 +188,21 @@ export default function Jobs() {
                 📍 {job.location} • {job.jobType}
               </span>
 
+              {/* ❤️ SAVE BUTTON */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   saveJob(job._id);
                 }}
-                className="text-red-500 text-xl"
+                className={`text-xl transition ${
+                  savedJobs.includes(job._id)
+                    ? "text-red-600"
+                    : "text-gray-400"
+                }`}
               >
                 ❤️
               </button>
             </div>
-
           </div>
         ))
       )}
