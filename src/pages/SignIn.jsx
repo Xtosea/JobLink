@@ -79,3 +79,23 @@ export default function Login() {
     {showPassword ? "Hide" : "Show"}
   </button>
 </div>
+
+<button
+  type="submit"
+  disabled={loading}
+  className="w-full bg-blue-600 text-white py-2 rounded"
+>
+  {loading ? "Logging in..." : "Login"}
+</button>
+
+</form>
+
+<p className="text-sm text-center mt-4">
+  Don't have an account?{" "}
+  <Link to="/signup" className="text-blue-600">
+    Register
+  </Link>
+</p>
+
+</div>
+);
