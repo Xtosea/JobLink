@@ -1,6 +1,6 @@
 import React from "react";
 import EmployerDashboard from "./EmployerDashboard";
-import RoleDashboard from "./ApplicantDashboard";
+import JobApplicants from "./JobApplicants";
 
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
