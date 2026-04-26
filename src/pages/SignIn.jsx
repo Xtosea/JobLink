@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const API = "https://joblinkbackend.onrender.com/api";
@@ -15,6 +18,8 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const { data } = await axios.post(
         `${API}/auth/login`,
         form
@@ -25,7 +30,6 @@ export default function Login() {
 
       alert("Login successful");
 
-      // redirect by role
       if (data.user.role === "employer") {
         navigate("/employer-dashboard");
       } else {
@@ -34,35 +38,29 @@ export default function Login() {
 
     } catch (err) {
       alert("Invalid login");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <h2 className="text-xl font-bold mb-4 text-center">
+        Login
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+
         <input
           placeholder="Email"
-          className="w-full border p-2"
+          className="w-full border p-2 rounded"
           onChange={(e) =>
             setForm({ ...form, email: e.target.value })
           }
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border p-2"
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
-        />
-
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
-          Login
-        </button>
-      </form>
-    </div>
-  );
-}
+        {/* PASSWORD FIELD */}
+        <div className="relative">
+          <input
+            type={show
