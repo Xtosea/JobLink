@@ -183,17 +183,7 @@ const requireAuth = (action) => {
   return (
   <div>
 
-          {/* 🔵 Post Job Butto */}
-    <div className="flex justify-center mb-2">
-        <Link to="/post-job">
-          <button className="bg-green-600 text-white px-8 py-2 rounded">
-            Post a Job
-          </button>
-        </Link>
-      </div>
-    
-
-    {/* 🔵 Browse Jobs Button */}
+          {/* 🔵 Browse Jobs Button */}
     <div className="flex justify-center mb-4">
       <button
   onClick={() => {
@@ -204,7 +194,19 @@ const requireAuth = (action) => {
 >
   Post a Job
 </button>
-    </div>
+   
+
+
+  {/* 🔵 Post Job Butto */}
+    <div className="flex justify-center mb-2">
+        <Link to="/jobs">
+          <button className="bg-blue-600 text-white px-8 py-2 rounded">
+            Post a Job
+          </button>
+        </Link>
+      </div>
+
+    
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
