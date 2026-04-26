@@ -190,7 +190,7 @@ const requireAuth = (action) => {
     if (!requireAuth("Post a job")) return;
     navigate("/post-job");
   }}
-  className="bg-green-600 text-white px-4 py-2 px-8 rounded">
+  <className="bg-green-600 text-white px-4 py-2 px-8 rounded">
 
   Post a Job
 </button>
