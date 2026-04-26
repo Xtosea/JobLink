@@ -1,6 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";useEffect(() => {
+  const fetchJobs = async () => {
+    try {
+      let url = `${API}/jobs?`;
+
+      if (type) url += `jobType=${type}&`;
+      if (category) url += `category=${category}&`;
+      if (search) url += `search=${search}`;
+
+      const { data } = await axios.get(url);
+
+      // 🔥 Sort featured jobs first
+      const sortedJobs = data.sort(
+        (a, b) => (b.isFeatured === true) - (a.isFeatured === true)
+      );
+
+      setJobs(sortedJobs);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchJobs();
+}, [type, category, search]);
 
 export default function Jobs() {
   const API = "https://joblinkbackend.onrender.com/api";
