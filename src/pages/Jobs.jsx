@@ -16,7 +16,16 @@ export default function Jobs() {
   const category = query.get("category") || "";
   const search = query.get("search") || "";
 
-  // ❤️ SAVE JOB FUNCTION
+  const { data } = await axios.get(url);
+
+const sortedJobs = data.sort((a, b) => {
+  return (b.isFeatured === true) - (a.isFeatured === true);
+});
+
+setJobs(sortedJobs);
+    
+
+// ❤️ SAVE JOB FUNCTION
   const saveJob = async (jobId) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
