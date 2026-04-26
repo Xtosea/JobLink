@@ -110,7 +110,7 @@ element={<JobTypes />} />
 
 <Route path="/employer-dashboard" element={<EmployerDashboard />} />
 
-<<Route path="/roledashboard" element={<Dashboard />} />
+<Route path="/roledashboard" element={<Dashboard />} />
 
 <Route
   path="/employer-dashboard"
